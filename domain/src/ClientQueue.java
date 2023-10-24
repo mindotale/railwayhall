@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -32,12 +34,15 @@ public class ClientQueue {
         return client;
     }
 
-    public Client[] dequeueAll() {
-        int size = queue.size();
-        Client[] clients = new Client[size];
-        queue.toArray(clients);
-        queue.clear();
-        clientIds.clear();
+    public List<Client> dequeueAll() {
+        List<Client> clients = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            Client client = queue.poll();
+            if (client != null) {
+                clientIds.remove(client.getId());
+                clients.add(client);
+            }
+        }
         return clients;
     }
 

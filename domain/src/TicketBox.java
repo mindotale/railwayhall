@@ -1,4 +1,4 @@
-import java.util.Random;
+import java.util.List;
 
 public class TicketBox implements Ticker {
     private final int id;
@@ -70,7 +70,7 @@ public class TicketBox implements Ticker {
         queue.enqueueAll(clients);
     }
 
-    public Client[] dequeueAll() {
+    public List<Client> dequeueAll() {
         return queue.dequeueAll();
     }
 
