@@ -43,6 +43,8 @@ public class TicketBox implements Ticker {
         return ticks;
     }
 
+    public int getQueueSize() { return queue.getSize(); }
+
     public void enable() {
         isEnabled = true;
     }

@@ -7,7 +7,7 @@ public class Entrance implements Ticker {
     private final int id;
     private final Vector position;
     private final ArrayList<Client> clients;
-    private boolean isEnabled;
+    private boolean isOpen;
     private int ticks;
 
     public Entrance(int id, Vector position, ClientGenerationStrategy clientGenerationStrategy) {
@@ -15,7 +15,7 @@ public class Entrance implements Ticker {
         this.position = position;
         this.clientGenerationStrategy = clientGenerationStrategy;
         this.clients = new ArrayList<>();
-        this.isEnabled = true;
+        this.isOpen = true;
         this.ticks = 0;
     }
 
@@ -26,18 +26,18 @@ public class Entrance implements Ticker {
 
     @Override
     public void tick() {
-        if (isEnabled) {
+        if (isOpen) {
             generateClients();
         }
         ticks++;
     }
 
-    public void enable() {
-        isEnabled = true;
+    public void open() {
+        isOpen = true;
     }
 
-    public void disable() {
-        isEnabled = false;
+    public void close() {
+        isOpen = false;
     }
 
     public List<Client> getClients() {
@@ -52,8 +52,8 @@ public class Entrance implements Ticker {
         return position;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isOpen() {
+        return isOpen;
     }
 
     public List<Client> letClientsIn() {

@@ -31,6 +31,10 @@ public final class Vector {
         return Math.sqrt(x * x + y * y);
     }
 
+    public double distanceTo(Vector other) {
+        return this.subtract(other).magnitude();
+    }
+
     public Vector scale(double scalar) {
         return new Vector(this.x * scalar, this.y * scalar);
     }
