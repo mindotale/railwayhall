@@ -1,13 +1,6 @@
 package clients;
 
-import clients.Client;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 public class ClientQueue {
     private final Queue<Client> queue = new PriorityQueue<>((c1, c2) -> c2.getPriority() - c1.getPriority());

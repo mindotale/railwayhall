@@ -1,7 +1,9 @@
 package ticketboxes;
 
-import clients.*;
-import common.*;
+import clients.Client;
+import clients.ClientQueue;
+import common.Ticker;
+import common.Vector;
 
 import java.util.List;
 

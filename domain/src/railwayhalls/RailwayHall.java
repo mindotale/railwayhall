@@ -1,9 +1,13 @@
 package railwayhalls;
 
-import clients.*;
-import common.*;
-import entrances.*;
-import ticketboxes.*;
+import clients.Client;
+import clients.ClientProcessingLog;
+import clients.ClientProcessingRecord;
+import common.Ticker;
+import entrances.Entrance;
+import entrances.EntranceConfig;
+import ticketboxes.TicketBox;
+import ticketboxes.TicketBoxConfig;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +56,22 @@ public class RailwayHall implements Ticker {
     public int getClientCapacity() { return clientCapacity; }
 
     public int getRestartClientCapacity() { return restartClientCapacity; }
+
+    public List<Client> getClients() {
+        return List.copyOf(clients.values());
+    }
+
+    public List<Entrance> getEntrances() {
+        return List.copyOf(entrances.values());
+    }
+
+    public List<TicketBox> getTicketBoxes() {
+        return List.copyOf(ticketBoxes.values());
+    }
+
+    public TicketBox getReservedTicketBox() {
+        return reservedTicketBox;
+    }
 
     public int getClientCount() { return clients.size(); }
 
