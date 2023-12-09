@@ -17,7 +17,6 @@ public class RailwayHall implements Ticker {
     private final TicketBox reservedTicketBox;
     private final Map<Integer, Entrance> entrances;
     private final Map<Integer, Client> clients;
-    private final ClientProcessingLog log;
     private final int clientCapacity;
     private final int restartClientCapacity;
     private int ticks;
@@ -41,7 +40,6 @@ public class RailwayHall implements Ticker {
         this.clientCapacity = config.getClientCapacity();
         this.restartClientCapacity = config.getRestartClientCapacity();
         this.clients = new HashMap<>();
-        this.log = new ClientProcessingLog();
         this.ticks = 0;
     }
 
@@ -199,10 +197,13 @@ public class RailwayHall implements Ticker {
     }
 
     public List<ClientProcessingRecord> getRecords() {
-        return log.getRecords();
+        return Collections.unmodifiableList(ticketBoxes.values().stream()
+                .map(TicketBox::getRecords)
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
     }
 
     public void clearRecords() {
-        log.clearRecords();
+        ticketBoxes.values().forEach(TicketBox::clearRecords);
     }
 }

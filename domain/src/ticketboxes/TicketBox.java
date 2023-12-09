@@ -1,10 +1,13 @@
 package ticketboxes;
 
 import clients.Client;
+import clients.ClientProcessingLog;
+import clients.ClientProcessingRecord;
 import clients.ClientQueue;
 import common.Ticker;
 import common.Vector;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TicketBox implements Ticker {
@@ -16,6 +19,7 @@ public class TicketBox implements Ticker {
     private int ticks;
     private int currentClientId;
     private int remainingProcessingTicks;
+    private final ClientProcessingLog log;
 
     public TicketBox(int id, Vector position, TicketProcessingTimeStrategy ticketProcessingTimeStrategy) {
         if (id < 0) {
@@ -31,6 +35,7 @@ public class TicketBox implements Ticker {
         this.isEnabled = true;
         this.ticks = 0;
         this.queue = new ClientQueue();
+        this.log = new ClientProcessingLog();
     }
 
     public int getId() {
@@ -81,6 +86,12 @@ public class TicketBox implements Ticker {
 
     public List<Client> dequeueAll() {
         return queue.dequeueAll();
+    }
+    public List<ClientProcessingRecord> getRecords() {
+        return log.getRecords();
+    }
+    public void clearRecords() {
+        log.clearRecords();
     }
 
     private void processCurrentClient()
