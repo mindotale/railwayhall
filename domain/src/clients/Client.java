@@ -1,4 +1,11 @@
-import java.util.*;
+package clients;
+
+import common.Vector;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Client {
     private final int id;
@@ -58,7 +65,7 @@ public class Client {
     }
 
     public void moveTo(Vector newPosition) {
-        Vector direction = newPosition.subtract(position);
+        common.Vector direction = newPosition.subtract(position);
         double distanceToMove = velocity;
 
         if (direction.magnitude() <= distanceToMove) {

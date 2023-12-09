@@ -1,3 +1,8 @@
+package entrances;
+
+import clients.ClientGenerationStrategy;
+import common.Vector;
+
 public final class EntranceConfig {
     private final int id;
     private final Vector position;
@@ -20,6 +25,4 @@ public final class EntranceConfig {
     public ClientGenerationStrategy getClientGenerationStrategy() {
         return clientGenerationStrategy;
     }
-
-
 }

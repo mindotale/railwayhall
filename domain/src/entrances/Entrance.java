@@ -1,3 +1,10 @@
+package entrances;
+
+import clients.Client;
+import clients.ClientGenerationStrategy;
+import common.Ticker;
+import common.Vector;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

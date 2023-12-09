@@ -1,3 +1,5 @@
+package ticketboxes;
+
 import java.util.Random;
 
 public class RandomTicketTimeProcessingStrategy implements TicketProcessingTimeStrategy {

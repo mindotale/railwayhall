@@ -1,3 +1,10 @@
+package railwayhalls;
+
+import clients.*;
+import common.*;
+import entrances.*;
+import ticketboxes.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 

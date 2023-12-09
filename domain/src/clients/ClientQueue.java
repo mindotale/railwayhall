@@ -1,3 +1,7 @@
+package clients;
+
+import clients.Client;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;

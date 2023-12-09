@@ -1,3 +1,5 @@
+package clients;
+
 public final class ClientProcessingRecord {
     private final int cashDeskId;
     private final int clientId;

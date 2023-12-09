@@ -1,3 +1,5 @@
+package common;
+
 public final class Vector {
     private final double x;
     private final double y;

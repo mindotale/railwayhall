@@ -1,3 +1,8 @@
+package railwayhalls;
+
+import entrances.EntranceConfig;
+import ticketboxes.TicketBoxConfig;
+
 import java.util.Collection;
 import java.util.List;
 

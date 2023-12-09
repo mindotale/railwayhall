@@ -1,3 +1,7 @@
+package ticketboxes;
+
+import common.Vector;
+
 public final class TicketBoxConfig {
     private final int id;
     private final Vector position;
