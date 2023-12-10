@@ -1,45 +1,43 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
 
+import domain.common.Vector;
 import domain.ticketboxes.TicketBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TicketBoxViewModel implements presentation.viewmodels.abstractions.TicketBoxViewModel {
-    public TicketBoxViewModel(TicketBox ticketBox) {
-        this.model = ticketBox;
-    }
 
     private TicketBox model;
 
     @Override
     public int getId()
     {
-        return model.getId();
+        return 1;
     }
 
     @Override
     public presentation.viewmodels.abstractions.PositionViewModel getPosition()
     {
-        return new PositionViewModel(model.getPosition());
+        return new PositionViewModel(new Vector(200, 200));
     }
 
     @Override
     public int getClientsCount()
     {
-        return model.getQueueSize();
+        return 0;
     }
 
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        return new ArrayList<ClientViewModel>();
+        return new ArrayList<>();
     }
 
     @Override
     public boolean isOpen()
     {
-        return model.isEnabled();
+        return true;
     }
 
 }

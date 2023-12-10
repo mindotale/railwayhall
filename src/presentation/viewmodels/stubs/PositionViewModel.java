@@ -1,4 +1,4 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
 
 import domain.common.Vector;
 
