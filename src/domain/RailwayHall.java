@@ -1,6 +1,8 @@
+package domain;
+
 import java.util.*;
 import java.util.stream.Collectors;
-
+import domain.Vector;
 public class RailwayHall implements Ticker {
     private final Map<Integer, TicketBox> ticketBoxes;
     private final TicketBox reservedTicketBox;

@@ -1,3 +1,5 @@
+package domain;
+
 public final class EntranceConfig {
     private final int id;
     private final Vector position;

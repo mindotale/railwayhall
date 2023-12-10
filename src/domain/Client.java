@@ -1,3 +1,6 @@
+package domain;
+
+import java.util.Vector;
 import java.util.*;
 
 public class Client {
@@ -5,10 +8,10 @@ public class Client {
     private final List<ClientStatus> statuses;
     private final int priority;
     private final double velocity;
-    private Vector position;
+    private java.util.Vector position;
     private int tickets;
 
-    public Client(int id, Vector position, double velocity, int tickets, Collection<ClientStatus> statuses) {
+    public Client(int id, java.util.Vector position, double velocity, int tickets, Collection<ClientStatus> statuses) {
         if (id < 0) {
             throw new IllegalArgumentException("Client ID must be non-negative.");
         }
@@ -34,7 +37,7 @@ public class Client {
         return id;
     }
 
-    public Vector getPosition() {
+    public java.util.Vector getPosition() {
         return position;
     }
 
@@ -64,7 +67,7 @@ public class Client {
         if (direction.magnitude() <= distanceToMove) {
             moveToInstantly(newPosition);
         } else {
-            Vector newDirection = direction.normalize().scale(distanceToMove);
+           Vector newDirection = direction.normalize().scale(distanceToMove);
             position = position.add(newDirection);
         }
     }

@@ -1,4 +1,4 @@
-import pages.mainpage.MainPage;
+import presentation.pages.mainpage.MainPage;
 
 import javax.swing.*;
 

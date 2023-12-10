@@ -1,6 +1,7 @@
-package pages.mainpage;
+package presentation.pages.mainpage;
 
-import pages.configpage.ConfigPage;
+
+import presentation.pages.configpage.ConfigPage;
 
 import javax.swing.*;
 import java.awt.*;

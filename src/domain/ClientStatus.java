@@ -1,3 +1,5 @@
+package domain;
+
 public final class ClientStatus {
     private final String name;
     private final int priority;
