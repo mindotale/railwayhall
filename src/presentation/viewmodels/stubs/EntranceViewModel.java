@@ -1,47 +1,44 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
 
+import domain.common.Vector;
 import domain.entrances.Entrance;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EntranceViewModel implements presentation.viewmodels.abstractions.EntranceViewModel {
-    private Entrance model;
 
-    public EntranceViewModel(Entrance entrance) {
-        this.model = entrance;
+    public EntranceViewModel() {
     }
 
     @Override
     public int getId()
     {
-        return model.getId();
+        return 1;
     }
 
     @Override
     public presentation.viewmodels.abstractions.PositionViewModel getPosition()
     {
-        return new PositionViewModel(model.getPosition());
+        return new PositionViewModel(new Vector(0, 0));
     }
 
     @Override
     public int getClientsCount()
     {
-        return model.getClients().size();
+        return 1;
     }
 
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        var clients = model.getClients();
-        return clients.stream()
-                .map(ClientViewModel::new) // This assumes a constructor in NewObject that takes an OldObject
-                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @Override
     public boolean isOpen()
     {
-        return model.isOpen();
+        return true;
     }
 }
