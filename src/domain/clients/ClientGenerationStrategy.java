@@ -1,4 +1,6 @@
-package domain;
+package domain.clients;
+
+import domain.common.Ticker;
 
 import java.util.List;
 

@@ -1,4 +1,7 @@
-package domain;
+package domain.railwayhalls;
+
+import domain.entrances.EntranceConfig;
+import domain.ticketboxes.TicketBoxConfig;
 
 import java.util.Collection;
 import java.util.List;

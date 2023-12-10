@@ -1,17 +1,21 @@
-package domain;
+package domain.clients;
 
-import java.util.Vector;
-import java.util.*;
+import domain.common.Vector;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Client {
     private final int id;
     private final List<ClientStatus> statuses;
     private final int priority;
     private final double velocity;
-    private java.util.Vector position;
+    private Vector position;
     private int tickets;
 
-    public Client(int id, java.util.Vector position, double velocity, int tickets, Collection<ClientStatus> statuses) {
+    public Client(int id, Vector position, double velocity, int tickets, Collection<ClientStatus> statuses) {
         if (id < 0) {
             throw new IllegalArgumentException("Client ID must be non-negative.");
         }
@@ -37,7 +41,7 @@ public class Client {
         return id;
     }
 
-    public java.util.Vector getPosition() {
+    public Vector getPosition() {
         return position;
     }
 
@@ -61,7 +65,7 @@ public class Client {
     }
 
     public void moveTo(Vector newPosition) {
-        Vector direction = newPosition.subtract(position);
+        domain.common.Vector direction = newPosition.subtract(position);
         double distanceToMove = velocity;
 
         if (direction.magnitude() <= distanceToMove) {

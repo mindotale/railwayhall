@@ -1,4 +1,4 @@
-package domain;
+package domain.common;
 
 public final class Vector {
     private final double x;

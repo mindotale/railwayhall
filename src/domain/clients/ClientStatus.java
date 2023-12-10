@@ -1,4 +1,4 @@
-package domain;
+package domain.clients;
 
 public final class ClientStatus {
     private final String name;

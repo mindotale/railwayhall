@@ -1,4 +1,4 @@
-package domain;
+package domain.clients;
 
 public final class ClientProcessingRecord {
     private final int cashDeskId;

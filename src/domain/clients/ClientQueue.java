@@ -1,4 +1,4 @@
-package domain;
+package domain.clients;
 
 import java.util.*;
 

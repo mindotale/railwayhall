@@ -1,4 +1,7 @@
-package domain;
+package domain.ticketboxes;
+
+
+import domain.common.Vector;
 
 public final class TicketBoxConfig {
     private final int id;

@@ -1,14 +1,20 @@
-package domain;
+package domain.railwayhalls;
+
+import domain.clients.Client;
+import domain.clients.ClientProcessingRecord;
+import domain.common.Ticker;
+import domain.entrances.Entrance;
+import domain.entrances.EntranceConfig;
+import domain.ticketboxes.TicketBox;
+import domain.ticketboxes.TicketBoxConfig;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import domain.Vector;
 public class RailwayHall implements Ticker {
     private final Map<Integer, TicketBox> ticketBoxes;
     private final TicketBox reservedTicketBox;
     private final Map<Integer, Entrance> entrances;
     private final Map<Integer, Client> clients;
-    private final ClientProcessingLog log;
     private final int clientCapacity;
     private final int restartClientCapacity;
     private int ticks;
@@ -32,7 +38,6 @@ public class RailwayHall implements Ticker {
         this.clientCapacity = config.getClientCapacity();
         this.restartClientCapacity = config.getRestartClientCapacity();
         this.clients = new HashMap<>();
-        this.log = new ClientProcessingLog();
         this.ticks = 0;
     }
 
@@ -47,6 +52,22 @@ public class RailwayHall implements Ticker {
     public int getClientCapacity() { return clientCapacity; }
 
     public int getRestartClientCapacity() { return restartClientCapacity; }
+
+    public List<Client> getClients() {
+        return List.copyOf(clients.values());
+    }
+
+    public List<Entrance> getEntrances() {
+        return List.copyOf(entrances.values());
+    }
+
+    public List<TicketBox> getTicketBoxes() {
+        return List.copyOf(ticketBoxes.values());
+    }
+
+    public TicketBox getReservedTicketBox() {
+        return reservedTicketBox;
+    }
 
     public int getClientCount() { return clients.size(); }
 
@@ -174,10 +195,13 @@ public class RailwayHall implements Ticker {
     }
 
     public List<ClientProcessingRecord> getRecords() {
-        return log.getRecords();
+        return Collections.unmodifiableList(ticketBoxes.values().stream()
+                .map(TicketBox::getRecords)
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
     }
 
     public void clearRecords() {
-        log.clearRecords();
+        ticketBoxes.values().forEach(TicketBox::clearRecords);
     }
 }

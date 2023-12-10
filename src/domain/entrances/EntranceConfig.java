@@ -1,4 +1,7 @@
-package domain;
+package domain.entrances;
+
+import domain.clients.ClientGenerationStrategy;
+import domain.common.Vector;
 
 public final class EntranceConfig {
     private final int id;
@@ -22,6 +25,4 @@ public final class EntranceConfig {
     public ClientGenerationStrategy getClientGenerationStrategy() {
         return clientGenerationStrategy;
     }
-
-
 }

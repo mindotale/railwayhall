@@ -1,7 +1,8 @@
 package presentation.pages.configpage;
 
-import domain.EntranceConfig;
-import domain.TicketBoxConfig;
+
+import domain.entrances.EntranceConfig;
+import domain.ticketboxes.TicketBoxConfig;
 
 import javax.swing.*;
 import java.awt.*;

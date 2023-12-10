@@ -1,4 +1,9 @@
-package domain;
+package domain.entrances;
+
+import domain.clients.Client;
+import domain.clients.ClientGenerationStrategy;
+import domain.common.Ticker;
+import domain.common.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
