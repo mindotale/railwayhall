@@ -10,7 +10,7 @@ public final class RailwayHallConfig {
     private final List<TicketBoxConfig> ticketBoxes;
     private final TicketBoxConfig reservedTicketBox;
     private final List<EntranceConfig> entrances;
-    private final int clientCapacity;
+        private final int clientCapacity;
     private final int restartClientCapacity;
 
     public RailwayHallConfig(Collection<TicketBoxConfig> ticketBoxes, TicketBoxConfig reservedTicketBox, Collection<EntranceConfig> entrances, int clientCapacity, int restartClientCapacity) {
