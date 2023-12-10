@@ -1,6 +1,7 @@
 package presentation.pages.configpage;
 
 
+import domain.ticketboxes.TicketBoxConfig;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
@@ -51,11 +52,11 @@ public class ConfigPage extends JFrame {
         }
 
         // Reserved Ticket Box Configuration Panel
-        ReservedTicketBoxConfigPanel reservedTicketBoxPanel = new ReservedTicketBoxConfigPanel();
-        reservedTicketBoxPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
-        reservedTicketBoxPanel.setBounds(750, 0, 320, 100);
+        reservedTicketBoxConfigPanel = new ReservedTicketBoxConfigPanel();
+        reservedTicketBoxConfigPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
+        reservedTicketBoxConfigPanel.setBounds(750, 0, 320, 100);
 
-        panel.add(reservedTicketBoxPanel);
+        panel.add(reservedTicketBoxConfigPanel);
 
         // Client Capacity Configuration Panel
         JPanel clientCapacityPanel = new JPanel(null);
@@ -67,7 +68,7 @@ public class ConfigPage extends JFrame {
         clientCapacityLabel.setBounds(10, 20, 150, 20);
         clientCapacityPanel.add(clientCapacityLabel);
 
-        JTextField clientCapacityField = new JTextField(5);
+        clientCapacityField = new JTextField(5);
         clientCapacityField.setBounds(130, 20, 50, 20);
         clientCapacityPanel.add(clientCapacityField);
 
@@ -76,7 +77,7 @@ public class ConfigPage extends JFrame {
         restartClientCapacityLabel.setBounds(10, 50, 170, 20);
         clientCapacityPanel.add(restartClientCapacityLabel);
 
-        JTextField restartClientCapacityField = new JTextField(5);
+        restartClientCapacityField = new JTextField(5);
         restartClientCapacityField.setBounds(130, 50, 50, 20);
         clientCapacityPanel.add(restartClientCapacityField);
 
@@ -102,9 +103,26 @@ public class ConfigPage extends JFrame {
 
     private void saveConfiguration() {
         try {
-            System.out.println("Configuration saved: " );
+            var resultTicketBoxConfigs = ticketBoxConfigPanels.stream().map(e -> e.getTicketBoxConfig()).toList();
+            var resultEntranceConfigs = entranceConfigPanels.stream().map(e -> e.getEntranceConfig()).toList();
+
+            var resultReservedTicketBoxConfig = reservedTicketBoxConfigPanel.getTicketBoxConfig();
+
+            var resultClientCapacity = Integer.parseInt(clientCapacityField.getText());
+            var resultrestartClientCapacity = Integer.parseInt(restartClientCapacityField.getText());
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private ArrayList<TicketBoxConfig> ValidateTicketBoxConfgs() {
+        var resultList = new ArrayList<TicketBoxConfig>();
+
+        for (var configPanel : ticketBoxConfigPanels) {
+            var config = configPanel.getTicketBoxConfig();
+            resultList.add(config);
+        }
+
+        return resultList;
     }
 }

@@ -48,7 +48,12 @@ public class ReservedTicketBoxConfigPanel extends JPanel {
     public TicketBoxConfig getTicketBoxConfig() {
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
-        TicketProcessingTimeStrategy strategy = (TicketProcessingTimeStrategy) strategyComboBox.getSelectedItem();
+        TicketProcessingTimeStrategy strategy = new TicketProcessingTimeStrategy() {
+            @Override
+            public int getTime() {
+                return 0;
+            }
+        };
 
         return new TicketBoxConfig(ticketBoxNumber, new Vector(xCoordinate, yCoordinate), strategy);
     }
