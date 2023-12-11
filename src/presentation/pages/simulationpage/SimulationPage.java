@@ -1,6 +1,7 @@
 package presentation.pages.simulationpage;
 
 import presentation.viewmodels.RailwayHallViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -10,13 +11,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SimulationPage extends JFrame {
     private final RailwayHallViewModel railwayHallViewModel;
     private boolean simulationStarted;
     private Timer simulation;
-    private String currentPanel;
+    private String currentPanel = "General";
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
@@ -151,20 +153,20 @@ public class SimulationPage extends JFrame {
         var ticketBoxItems = new ArrayList<String>();
         var boxes = railwayHallViewModel.getTicketBoxes();
         for (var box : boxes){
-            ticketBoxItems.add("Ticket Box " + box.getId());
+            ticketBoxItems.add("Ticket Box - " + box.getId());
         }
 
         var entranceItems = new ArrayList<String>();
         var entrances = railwayHallViewModel.getEntrances();
         for (var entrance : entrances){
-            entranceItems.add("Entrance " + entrance.getId());
+            entranceItems.add("Entrance - " + entrance.getId());
         }
 
         var clientItems = new ArrayList<String>();
 
         var clients = railwayHallViewModel.getClients();
         for (var client : clients){
-            clientItems.add("Client " + client.getId() + " with priority " + client.getPriority());
+            clientItems.add("Client - " + client.getId() + " with priority " + client.getPriority());
         }
         var logItems = new ArrayList<String>();
 
@@ -179,64 +181,63 @@ public class SimulationPage extends JFrame {
 
         // Update the JList with the new items
         JList<String> itemList = new JList<>(itemsToDisplay.toArray(new String[0]));
-        itemList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
 
+        itemList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedItem = itemList.getSelectedValue();
+                updateDetailsPanel(selectedItem, itemList.getSelectedIndex());
+                // Do something with the selected item
+                System.out.println("Selected item: " + selectedItem);
             }
         });
+
         itemsPanel.removeAll(); // Remove current content
         itemsPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
+
+    private JTextArea detailsArea;
     private JScrollPane createDetailsPanel() {
-        JTextArea detailsArea = new JTextArea();
+        detailsArea = new JTextArea();
         JScrollPane detailsScrollPane = new JScrollPane(detailsArea);
         detailsScrollPane.setBorder(new TitledBorder("Details"));
         return detailsScrollPane;
     }
-    private void updateDetailsPanel(String actionCommand) {
-        // You can define different lists for each button
-        var generalItems = new ArrayList<String>();
-        generalItems.add("Client Capacity: " + railwayHallViewModel.getClientCapacity() + "");
-        generalItems.add("Restart Capacity: " + railwayHallViewModel.getRestartCapacity() + "");
+    private void updateDetailsPanel(String selectedItem, int selectedIndex) {
+        detailsArea.selectAll();
+        detailsArea.replaceSelection("");
 
-        var ticketBoxItems = new ArrayList<String>();
-        var boxes = railwayHallViewModel.getTicketBoxes();
-        for (var box : boxes){
-            ticketBoxItems.add("Ticket Box " + box.getId());
+        switch (selectedItem.split("-")[0].strip()) {
+            case "Ticket Box" -> {
+                var ticketBox = railwayHallViewModel.getTicketBoxes().get(selectedIndex);
+                detailsArea.append("id - " + ticketBox.getId() + "\n");
+                detailsArea.append("Position X - " + ticketBox.getPosition().getX() + "\n");
+                detailsArea.append("Position Y - " + ticketBox.getPosition().getY() + "\n");
+                detailsArea.append("Is open - " + ticketBox.isOpen() + "\n");
+                detailsArea.append("Clients count - " + ticketBox.getClientsCount() + "\n");
+                detailsArea.append("Clients in queue - " + Arrays.toString(ticketBox.getClients().stream().map(ClientViewModel::getId).toArray()) + "\n");
+                //detailsArea.append("Current client - " + ticketBox.getCurrentClient().getId() + "\n"); // TODO: check exeption
+            }
+            case "Entrance" -> {
+                var entrance = railwayHallViewModel.getEntrances().get(selectedIndex);
+                detailsArea.append("id - " + entrance.getId() + "\n");
+                detailsArea.append("Position X - " + entrance.getPosition().getX() + "\n");
+                detailsArea.append("Position Y - " + entrance.getPosition().getY() + "\n");
+                detailsArea.append("Is open - " + entrance.isOpen() + "\n");
+                detailsArea.append("Clients count - " + entrance.getClientsCount() + "\n");
+                detailsArea.append("Clients in queue - " + Arrays.toString(entrance.getClients().stream().map(ClientViewModel::getId).toArray()) + "\n");
+                //detailsArea.append("Current client - " + entrance.getCurrentClient().getId() + "\n"); // TODO: check exeption
+            }
+            case "Client" -> {
+                var client = railwayHallViewModel.getClients().get(selectedIndex);
+                detailsArea.append("id - " + client.getId() + "\n");
+                detailsArea.append("Position X - " + client.getPosition().getX() + "\n");
+                detailsArea.append("Position Y - " + client.getPosition().getY() + "\n");
+                detailsArea.append("Priority - " + client.getPriority() + "\n");
+                detailsArea.append("Tickets count - " + client.getTicketsCount() + "\n");
+            }
         }
-
-        var entranceItems = new ArrayList<String>();
-        var entrances = railwayHallViewModel.getEntrances();
-        for (var entrance : entrances){
-            entranceItems.add("Entrance " + entrance.getId());
-        }
-
-        var clientItems = new ArrayList<String>();
-
-        var clients = railwayHallViewModel.getClients();
-        for (var client : clients){
-            clientItems.add("Client " + client.getId() + " with priority " + client.getPriority());
-        }
-        var logItems = new ArrayList<String>();
-
-        ArrayList<String> itemsToDisplay = switch (actionCommand) {
-            case "General" -> generalItems;
-            case "Ticket Boxes" -> ticketBoxItems;
-            case "Entrances" -> entranceItems;
-            case "Clients" -> clientItems;
-            case "Logs" -> logItems;
-            default -> new ArrayList<String>();
-        };
-
-        // Update the JList with the new items
-        JList<String> itemList = new JList<>(itemsToDisplay.toArray(new String[0]));
-        itemsPanel.removeAll(); // Remove current content
-        itemsPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
-        itemsPanel.revalidate();
-        itemsPanel.repaint();
     }
 
     private JPanel createActionPanel() {
