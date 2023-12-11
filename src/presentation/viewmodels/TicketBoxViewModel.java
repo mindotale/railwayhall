@@ -10,7 +10,7 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
         this.model = ticketBox;
     }
 
-    private TicketBox model;
+    private final TicketBox model;
 
     @Override
     public int getId()
@@ -33,7 +33,7 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        return new ArrayList<ClientViewModel>();
+        return new ArrayList<presentation.viewmodels.abstractions.ClientViewModel>();
     }
 
     @Override

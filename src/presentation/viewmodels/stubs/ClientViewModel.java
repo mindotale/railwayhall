@@ -13,7 +13,7 @@ public class ClientViewModel implements presentation.viewmodels.abstractions.Cli
 
     public ClientViewModel()
     {
-        x = 0;
+        x = 40;
     }
 
     @Override

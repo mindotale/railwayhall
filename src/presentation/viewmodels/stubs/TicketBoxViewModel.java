@@ -1,7 +1,9 @@
 package presentation.viewmodels.stubs;
+import java.util.Random;
 
 import domain.common.Vector;
 import domain.ticketboxes.TicketBox;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,20 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
 
     private TicketBox model;
 
+
+    private ClientViewModel client;
+    private ClientViewModel client2;
+    private ClientViewModel client3;
+    private ClientViewModel client4;
+
+    public TicketBoxViewModel()
+    {
+        client = new ClientViewModel();
+        client2 = new ClientViewModel();
+        client3 = new ClientViewModel();
+        client4 = new ClientViewModel();
+
+    }
     @Override
     public int getId()
     {
@@ -19,7 +35,10 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public presentation.viewmodels.abstractions.PositionViewModel getPosition()
     {
-        return new PositionViewModel(new Vector(200, 200));
+        Random random = new Random();
+        int randomNumber = random.nextInt(500) + 20; // 800 - 20 = 780 + 1 (to include 800)
+
+        return new PositionViewModel(new Vector(randomNumber, randomNumber));
     }
 
     @Override
@@ -31,7 +50,23 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        return new ArrayList<>();
+        var res = new ArrayList<presentation.viewmodels.abstractions.ClientViewModel>();
+        res.add(client);
+        res.add(client2);
+        res.add(client3);
+        res.add(client4);
+
+        res.add(client);
+        res.add(client2);
+        res.add(client3);
+        res.add(client4);
+
+
+        res.add(client);
+        res.add(client2);
+        res.add(client3);
+        res.add(client4);
+        return res;
     }
 
     @Override

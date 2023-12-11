@@ -7,9 +7,11 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimulationPage extends JFrame {
-    private RailwayHallViewModel railwayHallViewModel;
+    private presentation.viewmodels.stubs.RailwayHallViewModel railwayHallViewModel;
 
     public SimulationPage() {
         setTitle("Simulation Page");
@@ -25,6 +27,22 @@ public class SimulationPage extends JFrame {
 
         pack();
         setLocationRelativeTo(null);
+
+        var boxes = railwayHallViewModel.getTicketBoxes();
+        for (var box : boxes) {
+            List<String> clientIds = new ArrayList<>();
+            var clients = box.getClients();
+            for (int i = 0; i < clients.size(); i++) {
+                clientIds.add(clients.get(i).getId()+"");
+            }
+            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), 0, box.getId(), clientIds);
+        }
+
+        var clients = railwayHallViewModel.getClients();
+        for (var client : clients) {
+            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), "C1");
+        }
+
         setVisible(true);
     }
 
@@ -33,13 +51,6 @@ public class SimulationPage extends JFrame {
         capacityPanel.setBorder(new TitledBorder("Capacity"));
         capacityPanel.add(new JLabel("16/50"));
         return capacityPanel;
-    }
-
-    private JPanel createSimulationArea() {
-        JPanel simulationArea = new JPanel();
-        simulationArea.setBorder(new TitledBorder("Simulation Area"));
-        simulationArea.setPreferredSize(new Dimension(600, 600));
-        return simulationArea;
     }
 
     private JPanel createRightPanel() {
@@ -83,24 +94,91 @@ public class SimulationPage extends JFrame {
         return gbc;
     }
 
-    private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-        buttonsPanel.add(new JButton("General"));
-        buttonsPanel.add(new JButton("Ticket Boxes"));
-        buttonsPanel.add(new JButton("Entrances"));
-        buttonsPanel.add(new JButton("Clients"));
-        buttonsPanel.add(new JButton("Logs"));
-        return buttonsPanel;
-    }
+    private JPanel itemsPanel; // Declare itemsPanel as a field
 
     private JPanel createItemsPanel() {
-        JPanel itemsPanel = new JPanel(new BorderLayout());
+        itemsPanel = new JPanel(new BorderLayout());
         itemsPanel.setBorder(new TitledBorder("Items"));
-        JList<String> itemList = new JList<>(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"});
+        // Initial content
+        JList<String> itemList = new JList<>(new String[]{});
         itemsPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
         return itemsPanel;
     }
 
+    private JPanel createButtonsPanel() {
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        String[] buttonLabels = {"General", "Ticket Boxes", "Entrances", "Clients", "Logs"};
+
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.setActionCommand(label);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String selectedButtonActionCommand = e.getActionCommand();
+                    updateItemsPanel(selectedButtonActionCommand);
+                }
+            });
+            buttonsPanel.add(button);
+        }
+        return buttonsPanel;
+    }
+
+    private void updateItemsPanel(String actionCommand) {
+        // You can define different lists for each button
+        var generalItems = new ArrayList<String>();
+        generalItems.add("Client Capacity: " + railwayHallViewModel.getClientCapacity() + "");
+        generalItems.add("Restart Capacity: " + railwayHallViewModel.getRestartCapacity() + "");
+
+        var ticketBoxItems = new ArrayList<String>();
+        var boxes = railwayHallViewModel.getTicketBoxes();
+        for (var box : boxes){
+            ticketBoxItems.add("Ticket Box " + box.getId());
+        }
+
+        var entranceItems = new ArrayList<String>();
+        var entrances = railwayHallViewModel.getEntrances();
+        for (var entrance : entrances){
+            entranceItems.add("Entrance " + entrance.getId());
+        }
+
+        var clientItems = new ArrayList<String>();
+
+        var clients = railwayHallViewModel.getClients();
+        for (var client : clients){
+            clientItems.add("Client " + client.getId() + " with priority " + client.getPriority());
+        }
+        var logItems = new ArrayList<String>();
+
+        ArrayList<String> itemsToDisplay;
+
+        switch (actionCommand) {
+            case "General":
+                itemsToDisplay = generalItems;
+                break;
+            case "Ticket Boxes":
+                itemsToDisplay = ticketBoxItems;
+                break;
+            case "Entrances":
+                itemsToDisplay = entranceItems;
+                break;
+            case "Clients":
+                itemsToDisplay = clientItems;
+                break;
+            case "Logs":
+                itemsToDisplay = logItems;
+                break;
+            default:
+                itemsToDisplay = new ArrayList<String>();
+        }
+
+        // Update the JList with the new items
+        JList<String> itemList = new JList<>(itemsToDisplay.toArray(new String[0]));
+        itemsPanel.removeAll(); // Remove current content
+        itemsPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
+        itemsPanel.revalidate();
+        itemsPanel.repaint();
+    }
     private JScrollPane createDetailsPanel() {
         JTextArea detailsArea = new JTextArea();
         JScrollPane detailsScrollPane = new JScrollPane(detailsArea);
@@ -116,7 +194,7 @@ public class SimulationPage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Okey let's gooo");
                 railwayHallViewModel.tick();
-                System.out.println(railwayHallViewModel.getTotalClients().get(0).getPriority());
+                System.out.println(railwayHallViewModel.getTotalClients().get(0).getPosition().getY());
             }
         });
         actionPanel.add(startButton);
@@ -125,6 +203,16 @@ public class SimulationPage extends JFrame {
         actionPanel.add(new JButton("Open / Close"));
         return actionPanel;
     }
+    private SimulationArea simulationArea;
+
+    private JPanel createSimulationArea() {
+        simulationArea = new SimulationArea();
+        simulationArea.setBorder(new TitledBorder("Simulation Area"));
+        simulationArea.setPreferredSize(new Dimension(600, 600));
+        return simulationArea;
+    }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SimulationPage::new);

@@ -8,11 +8,13 @@ import java.util.List;
 public class RailwayHallViewModel implements presentation.viewmodels.abstractions.RailwayHallViewModel {
     private RailwayHall model;
     private TicketBoxViewModel ticketBox;
+    private TicketBoxViewModel ticketBox2;
     private ClientViewModel client;
 
     public RailwayHallViewModel()
     {
         ticketBox = new TicketBoxViewModel();
+        ticketBox2 = new TicketBoxViewModel();
         client = new ClientViewModel();
 
     }
@@ -47,6 +49,7 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
     public List<presentation.viewmodels.abstractions.TicketBoxViewModel> getTicketBoxes() {
         var res =  new ArrayList<presentation.viewmodels.abstractions.TicketBoxViewModel>();
         res.add(ticketBox);
+        res.add(ticketBox2);
         return res;
     }
 
