@@ -4,6 +4,8 @@ import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +16,7 @@ public class SimulationPage extends JFrame {
     private final RailwayHallViewModel railwayHallViewModel;
     private boolean simulationStarted;
     private Timer simulation;
+    private String currentPanel;
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
@@ -33,12 +36,12 @@ public class SimulationPage extends JFrame {
 
         addEntrances();
 
-        createTicketBoxes();
+        addTicketBoxes();
 
         setVisible(true);
     }
 
-    private void createTicketBoxes() {
+    private void addTicketBoxes() {
         var boxes = railwayHallViewModel.getTicketBoxes();
         for (var box : boxes) {
             int count = box.getClientsCount();
@@ -139,6 +142,61 @@ public class SimulationPage extends JFrame {
     }
 
     private void updateItemsPanel(String actionCommand) {
+        currentPanel = actionCommand;
+        // You can define different lists for each button
+        var generalItems = new ArrayList<String>();
+        generalItems.add("Client Capacity: " + railwayHallViewModel.getClientCapacity() + "");
+        generalItems.add("Restart Capacity: " + railwayHallViewModel.getRestartCapacity() + "");
+
+        var ticketBoxItems = new ArrayList<String>();
+        var boxes = railwayHallViewModel.getTicketBoxes();
+        for (var box : boxes){
+            ticketBoxItems.add("Ticket Box " + box.getId());
+        }
+
+        var entranceItems = new ArrayList<String>();
+        var entrances = railwayHallViewModel.getEntrances();
+        for (var entrance : entrances){
+            entranceItems.add("Entrance " + entrance.getId());
+        }
+
+        var clientItems = new ArrayList<String>();
+
+        var clients = railwayHallViewModel.getClients();
+        for (var client : clients){
+            clientItems.add("Client " + client.getId() + " with priority " + client.getPriority());
+        }
+        var logItems = new ArrayList<String>();
+
+        ArrayList<String> itemsToDisplay = switch (actionCommand) {
+            case "General" -> generalItems;
+            case "Ticket Boxes" -> ticketBoxItems;
+            case "Entrances" -> entranceItems;
+            case "Clients" -> clientItems;
+            case "Logs" -> logItems;
+            default -> new ArrayList<String>();
+        };
+
+        // Update the JList with the new items
+        JList<String> itemList = new JList<>(itemsToDisplay.toArray(new String[0]));
+        itemList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+
+            }
+        });
+        itemsPanel.removeAll(); // Remove current content
+        itemsPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
+        itemsPanel.revalidate();
+        itemsPanel.repaint();
+    }
+    private JScrollPane createDetailsPanel() {
+        JTextArea detailsArea = new JTextArea();
+        JScrollPane detailsScrollPane = new JScrollPane(detailsArea);
+        detailsScrollPane.setBorder(new TitledBorder("Details"));
+        return detailsScrollPane;
+    }
+    private void updateDetailsPanel(String actionCommand) {
         // You can define different lists for each button
         var generalItems = new ArrayList<String>();
         generalItems.add("Client Capacity: " + railwayHallViewModel.getClientCapacity() + "");
@@ -180,12 +238,6 @@ public class SimulationPage extends JFrame {
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
-    private JScrollPane createDetailsPanel() {
-        JTextArea detailsArea = new JTextArea();
-        JScrollPane detailsScrollPane = new JScrollPane(detailsArea);
-        detailsScrollPane.setBorder(new TitledBorder("Details"));
-        return detailsScrollPane;
-    }
 
     private JPanel createActionPanel() {
         JPanel actionPanel = new JPanel();
@@ -206,7 +258,10 @@ public class SimulationPage extends JFrame {
                         public void actionPerformed(ActionEvent e) {
                             railwayHallViewModel.tick();
 
-                            createTicketBoxes();
+                            updateItemsPanel(currentPanel);
+
+                            addTicketBoxes();
+                            addEntrances();
 
                             var clients = railwayHallViewModel.getClients();
                             for (String clientId : new ArrayList<>(simulationArea.getClientFigureMap().keySet())) {

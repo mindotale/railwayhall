@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class SimulationArea extends JPanel {
     private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
-    private List<TicketBoxFigure> figures = new ArrayList<>();
     private List<EntranceFigure> entrancesFigures = new ArrayList<>();
 
     public SimulationArea() {
@@ -59,7 +58,7 @@ public class SimulationArea extends JPanel {
         if (clientFigure == null) {
             return;
         }
-        Timer timer = new Timer( 30, new ActionListener() {
+        Timer timer = new Timer(30, new ActionListener() {
             private int currentX = clientFigure.posX;
             private int currentY = clientFigure.posY;
             private int deltaX = (newX - currentX) / 10;
