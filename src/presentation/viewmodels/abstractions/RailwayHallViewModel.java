@@ -19,6 +19,9 @@ public interface RailwayHallViewModel {
 
     List<ClientViewModel> getTotalClients();
 
+    List<ClientProcessingRecordViewModel> getTotalRecords();
+    void clearRecords();
+
     boolean isOpen();
 
     void closeTicketBox(int id);

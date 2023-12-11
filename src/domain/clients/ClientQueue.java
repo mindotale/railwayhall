@@ -46,4 +46,6 @@ public class ClientQueue {
     public Client peek() {
         return queue.peek();
     }
+
+    public List<Client> getAll() { return List.copyOf(queue); }
 }
