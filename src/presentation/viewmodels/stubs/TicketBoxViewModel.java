@@ -2,6 +2,8 @@ package presentation.viewmodels.stubs;
 
 import domain.common.Vector;
 import domain.ticketboxes.TicketBox;
+import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,21 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
         return new ArrayList<>();
+    }
+
+    @Override
+    public ClientViewModel getCurrentClient() {
+        return null;
+    }
+
+    @Override
+    public List<ClientProcessingRecordViewModel> getRecords() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void clearRecords() {
+
     }
 
     @Override

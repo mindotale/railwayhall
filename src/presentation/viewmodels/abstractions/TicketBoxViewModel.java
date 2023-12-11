@@ -11,5 +11,10 @@ public interface TicketBoxViewModel {
 
     List<ClientViewModel> getClients();
 
+    ClientViewModel getCurrentClient();
+
+    List<ClientProcessingRecordViewModel> getRecords();
+    void clearRecords();
+
     boolean isOpen();
 }

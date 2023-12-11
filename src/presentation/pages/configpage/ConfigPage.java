@@ -3,12 +3,14 @@ package presentation.pages.configpage;
 
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
+import domain.railwayhalls.RailwayHall;
 import domain.railwayhalls.RailwayHallConfig;
 import domain.ticketboxes.TicketBoxConfig;
 import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
+import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -123,7 +125,8 @@ public class ConfigPage extends JFrame {
                 var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
                         resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
                         resultrestartClientCapacity);
-                // Route to UI Page
+                var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
+                // Create Object of Simulation page and pass railwayHallViewModel
                 // You could add your logic here
             }
 
