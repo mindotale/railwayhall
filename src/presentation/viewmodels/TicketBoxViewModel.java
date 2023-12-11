@@ -1,9 +1,12 @@
 package presentation.viewmodels;
 
 import domain.ticketboxes.TicketBox;
+import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TicketBoxViewModel implements presentation.viewmodels.abstractions.TicketBoxViewModel {
     public TicketBoxViewModel(TicketBox ticketBox) {
@@ -33,8 +36,30 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        return new ArrayList<ClientViewModel>();
+        var clients = model.getQueue();
+        return clients.stream()
+                .map(presentation.viewmodels.ClientViewModel::new)
+                .collect(Collectors.toList());
     }
+
+    @Override
+    public ClientViewModel getCurrentClient() {
+        return new presentation.viewmodels.ClientViewModel(model.getCurrentClient());
+    }
+
+    @Override
+    public List<ClientProcessingRecordViewModel> getRecords() {
+        var records = model.getRecords();
+        return records.stream()
+                .map(presentation.viewmodels.ClientProcessingRecordViewModel::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void clearRecords() {
+        model.clearRecords();
+    }
+
 
     @Override
     public boolean isOpen()

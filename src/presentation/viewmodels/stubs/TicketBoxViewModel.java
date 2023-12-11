@@ -3,6 +3,8 @@ import java.util.Random;
 
 import domain.common.Vector;
 import domain.ticketboxes.TicketBox;
+import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 
 import java.util.ArrayList;
@@ -67,6 +69,21 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
         res.add(client3);
         res.add(client4);
         return res;
+    }
+
+    @Override
+    public ClientViewModel getCurrentClient() {
+        return null;
+    }
+
+    @Override
+    public List<ClientProcessingRecordViewModel> getRecords() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void clearRecords() {
+
     }
 
     @Override
