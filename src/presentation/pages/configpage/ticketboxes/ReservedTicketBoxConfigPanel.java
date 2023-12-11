@@ -41,7 +41,7 @@ public class ReservedTicketBoxConfigPanel extends JPanel {
         strategyLabel.setBounds(10, 70, 150, 20);
         add(strategyLabel);
 
-        String[] strategies = {"Strategy1", "Strategy2", "Strategy3"}; // Replace with your actual strategies
+        String[] strategies = {"Constant", "Random"}; // Replace with your actual strategies
         strategyComboBox = new JComboBox<>(strategies);
         strategyComboBox.setBounds(160, 70, 150, 20);
         add(strategyComboBox);
