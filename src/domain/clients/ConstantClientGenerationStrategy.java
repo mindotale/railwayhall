@@ -30,10 +30,6 @@ public class ConstantClientGenerationStrategy implements ClientGenerationStrateg
             throw new IllegalArgumentException("Tickets should be a positive value.");
         }
 
-        if (statuses.isEmpty()) {
-            throw new IllegalArgumentException("Statuses cannot be null or empty.");
-        }
-
         this.generationTicks = generationTicks;
         this.nextGenerationTicks = generationTicks;
         this.ticks = 0;

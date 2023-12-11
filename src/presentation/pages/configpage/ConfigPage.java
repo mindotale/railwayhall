@@ -2,6 +2,7 @@ package presentation.pages.configpage;
 
 
 import domain.common.IntegerIdGenerator;
+import domain.railwayhalls.RailwayHallConfig;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ConfigPage extends JFrame {
@@ -53,11 +55,11 @@ public class ConfigPage extends JFrame {
         }
 
         // Reserved Ticket Box Configuration Panel
-        ReservedTicketBoxConfigPanel reservedTicketBoxPanel = new ReservedTicketBoxConfigPanel();
-        reservedTicketBoxPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
-        reservedTicketBoxPanel.setBounds(750, 0, 320, 100);
+        reservedTicketBoxConfigPanel = new ReservedTicketBoxConfigPanel();
+        reservedTicketBoxConfigPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
+        reservedTicketBoxConfigPanel.setBounds(750, 0, 320, 100);
 
-        panel.add(reservedTicketBoxPanel);
+        panel.add(reservedTicketBoxConfigPanel);
 
         // Client Capacity Configuration Panel
         JPanel clientCapacityPanel = new JPanel(null);
@@ -69,7 +71,7 @@ public class ConfigPage extends JFrame {
         clientCapacityLabel.setBounds(10, 20, 150, 20);
         clientCapacityPanel.add(clientCapacityLabel);
 
-        JTextField clientCapacityField = new JTextField(5);
+        clientCapacityField = new JTextField(5);
         clientCapacityField.setBounds(130, 20, 50, 20);
         clientCapacityPanel.add(clientCapacityField);
 
@@ -78,7 +80,7 @@ public class ConfigPage extends JFrame {
         restartClientCapacityLabel.setBounds(10, 50, 170, 20);
         clientCapacityPanel.add(restartClientCapacityLabel);
 
-        JTextField restartClientCapacityField = new JTextField(5);
+        restartClientCapacityField = new JTextField(5);
         restartClientCapacityField.setBounds(130, 50, 50, 20);
         clientCapacityPanel.add(restartClientCapacityField);
 
@@ -104,6 +106,12 @@ public class ConfigPage extends JFrame {
 
     private void saveConfiguration() {
         try {
+            var ticketBoxConfigs = ticketBoxConfigPanels.stream().map(x -> x.getTicketBoxConfig()).collect(Collectors.toList());
+            var reservedTicketBoxConfig = reservedTicketBoxConfigPanel.getTicketBoxConfig();
+            var entranceConfigs = entranceConfigPanels.stream().map(x -> x.getEntranceConfig()).collect(Collectors.toList());
+            var clientCapacity = Integer.parseInt(clientCapacityField.getText());
+            var restartClientCapacity = Integer.parseInt(restartClientCapacityField.getText());
+            var railwayHallConfig = new RailwayHallConfig(ticketBoxConfigs, reservedTicketBoxConfig, entranceConfigs, clientCapacity, restartClientCapacity);
             System.out.println("Configuration saved: " );
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
