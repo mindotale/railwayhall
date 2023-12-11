@@ -10,9 +10,9 @@ public class RandomTicketTimeProcessingStrategy implements TicketProcessingTimeS
             throw new IllegalArgumentException("Invalid processing time constraints.");
         }
 
+        this.random = new Random(0);
         this.minProcessingTicks = minProcessingTicks;
         this.maxProcessingTicks = maxProcessingTicks;
-        this.random = new Random();
     }
 
     private static boolean isValidProcessingTime(int minProcessingTicks, int maxProcessingTicks) {
