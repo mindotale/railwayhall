@@ -169,6 +169,7 @@ public class RailwayHall implements Ticker {
 
     private void tickTicketBoxes() {
         ticketBoxes.values().forEach(TicketBox::tick);
+        reservedTicketBox.tick();
     }
 
     private void checkCapacity() {
