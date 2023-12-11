@@ -33,19 +33,14 @@ public class SimulationArea extends JPanel {
     }
 
     public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
-        // Now pass this list to the TicketBoxFigure constructor
         TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, count);
-        figures.add(figure);
         add(figure);
-        // Adjust the bounds as needed to fit all the client circles
-
         figure.setBounds(posX, posY, 90, 75);
         repaint();
     }
 
     public void addEntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientsIds) {
         EntranceFigure entrance = new EntranceFigure(posX, posY, id, isOpen, clientsIds);
-        entrancesFigures.add(entrance);
         add(entrance);
         entrance.setBounds(posX, posY, 90, 75);
         repaint();
@@ -64,10 +59,10 @@ public class SimulationArea extends JPanel {
         if (clientFigure == null) {
             return;
         }
-        Timer timer = new Timer(10, new ActionListener() {
+        Timer timer = new Timer( 30, new ActionListener() {
             private int currentX = clientFigure.posX;
             private int currentY = clientFigure.posY;
-            private int deltaX = (newX - currentX) / 10; // 10 кроків анімації
+            private int deltaX = (newX - currentX) / 10;
             private int deltaY = (newY - currentY) / 10;
 
             @Override
@@ -98,6 +93,18 @@ public class SimulationArea extends JPanel {
         }
     }
 
+    public Map<String, ClientFigure> getClientFigureMap() {
+        return clientFigureMap; // Повертаємо копію мапи для захисту інкапсуляції
+    }
+    public void removeClientFigure(String id) {
+        ClientFigure clientFigure = clientFigureMap.get(id);
+        if (clientFigure != null) {
+            remove(clientFigure);
+            clientFigureMap.remove(id);
+            repaint();
+        }
+    }
+
     public class ClientFigure extends JComponent {
         private int posX;
         private int posY;
@@ -110,6 +117,10 @@ public class SimulationArea extends JPanel {
             setBounds(x, y, getWidth(), getHeight());
             repaint();
         }
+
+
+
+
 
         public ClientFigure(int posX, int posY, String id) {
             this.posX = posX;

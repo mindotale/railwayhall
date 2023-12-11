@@ -209,12 +209,26 @@ public class SimulationPage extends JFrame {
                             createTicketBoxes();
 
                             var clients = railwayHallViewModel.getClients();
+                            for (String clientId : new ArrayList<>(simulationArea.getClientFigureMap().keySet())) {
+                                boolean clientExists = false;
+                                for (var client : clients) {
+                                    if (client.getId() == Integer.parseInt(clientId)) {
+                                        clientExists = true;
+                                        break;
+                                    }
+                                }
+
+                                // Якщо клієнта немає у списку 'clients', видалити його з SimulationArea
+                                if (!clientExists) {
+                                    simulationArea.removeClientFigure(clientId);
+                                }
+                            }
+
                             for (var client : clients) {
                                 if(!simulationArea.isClientOnPage(client.getId() + "")){
                                     simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId()+"");
                                 }
                                 simulationArea.animateClientMovement(client.getId() +"", client.getPosition().getX(), client.getPosition().getY()); // Нові координати X та Y
-
                             }
                         }
                     });
