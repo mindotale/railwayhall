@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationPage extends JFrame {
-    private RailwayHallViewModel railwayHallViewModel;
+    private final RailwayHallViewModel railwayHallViewModel;
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
@@ -23,17 +23,19 @@ public class SimulationPage extends JFrame {
         add(createRightPanel(), BorderLayout.EAST);
         add(createActionPanel(), BorderLayout.SOUTH);
 
-        railwayHallViewModel = railwayHallViewModel;
+        this.railwayHallViewModel = railwayHallViewModel;
 
         pack();
         setLocationRelativeTo(null);
+
+        addEntrances();
 
         var boxes = railwayHallViewModel.getTicketBoxes();
         for (var box : boxes) {
             List<String> clientIds = new ArrayList<>();
             var clients = box.getClients();
-            for (int i = 0; i < clients.size(); i++) {
-                clientIds.add(clients.get(i).getId()+"");
+            for (presentation.viewmodels.abstractions.ClientViewModel client : clients) {
+                clientIds.add(client.getId() + "");
             }
             simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), clientIds);
         }
@@ -45,9 +47,22 @@ public class SimulationPage extends JFrame {
 
         }
 
+
         setVisible(true);
     }
 
+    private void addEntrances() {
+        var entrances = railwayHallViewModel.getEntrances();
+        for(var entrance : entrances) {
+            List<String> clientIds = new ArrayList<>();
+            var clients = entrance.getClients();
+            for (presentation.viewmodels.abstractions.ClientViewModel client : clients) {
+                clientIds.add(client.getId() + "");
+            }
+            simulationArea.addEntranceFigure(entrance.getPosition().getX(), entrance.getPosition().getY(),
+                    entrance.getId(), entrance.isOpen(), clientIds);
+        }
+    }
 
     private JPanel createCapacityPanel() {
         JPanel capacityPanel = new JPanel();
@@ -153,27 +168,14 @@ public class SimulationPage extends JFrame {
         }
         var logItems = new ArrayList<String>();
 
-        ArrayList<String> itemsToDisplay;
-
-        switch (actionCommand) {
-            case "General":
-                itemsToDisplay = generalItems;
-                break;
-            case "Ticket Boxes":
-                itemsToDisplay = ticketBoxItems;
-                break;
-            case "Entrances":
-                itemsToDisplay = entranceItems;
-                break;
-            case "Clients":
-                itemsToDisplay = clientItems;
-                break;
-            case "Logs":
-                itemsToDisplay = logItems;
-                break;
-            default:
-                itemsToDisplay = new ArrayList<String>();
-        }
+        ArrayList<String> itemsToDisplay = switch (actionCommand) {
+            case "General" -> generalItems;
+            case "Ticket Boxes" -> ticketBoxItems;
+            case "Entrances" -> entranceItems;
+            case "Clients" -> clientItems;
+            case "Logs" -> logItems;
+            default -> new ArrayList<String>();
+        };
 
         // Update the JList with the new items
         JList<String> itemList = new JList<>(itemsToDisplay.toArray(new String[0]));
