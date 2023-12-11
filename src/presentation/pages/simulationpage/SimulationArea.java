@@ -25,10 +25,10 @@ public class SimulationArea extends JPanel {
         repaint();
     }
 
-    public void addTicketBoxFigure(int posX, int posY, int count, int id, List<String> clientIds) {
+    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
 
         // Now pass this list to the TicketBoxFigure constructor
-        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, count, id, clientIds);
+        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, clientIds);
         figures.add(figure);
         add(figure);
         // Adjust the bounds as needed to fit all the client circles
@@ -89,21 +89,21 @@ public class SimulationArea extends JPanel {
         private final int posY;
         private final int count;
         private final int id;
+        private final boolean isOpen;
         private final List<String> clientIds;
 
-        public TicketBoxFigure(int posX, int posY, int count, int id, List<String> clientIds) {
+        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
             this.posX = posX;
             this.posY = posY;
             this.count = clientIds.size();
             this.id = id;
+            this.isOpen = isOpen;
             this.clientIds = clientIds;
             setOpaque(false);
             // The height now includes space for circles
             setPreferredSize(new Dimension(90, 75)); // Fixed width and height
         }
 
-        // Inside the TicketBoxFigure class
-// Inside the TicketBoxFigure class
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -113,12 +113,28 @@ public class SimulationArea extends JPanel {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // Draw the TicketBox rectangle
-            g2d.setColor(new Color(144, 238, 144)); // Light green color
-            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+            if(isOpen) {
+                g2d.setColor(new Color(144, 238, 144)); // Light green color
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-            // Draw the TicketBox ID inside the rectangle
-            g2d.setColor(Color.BLACK);
-            drawCenteredString(g2d, "TB " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
+                // Draw the TicketBox ID inside the rectangle
+                g2d.setColor(Color.BLACK);
+                drawCenteredString(g2d, "TB " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
+            }
+            else {
+                g2d.setColor(Color.LIGHT_GRAY);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+
+                // Draw Disabled if box is closed
+                g2d.setColor(Color.BLACK);
+                drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
+
+                // Draw the TicketBox ID inside the rectangle
+                g2d.setColor(Color.BLACK);
+                drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
+            }
+
+
 
             // Constants for the circle
             int circleDiameter = 20; // Diameter of the circle

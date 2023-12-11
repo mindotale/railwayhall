@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationPage extends JFrame {
-    private presentation.viewmodels.stubs.RailwayHallViewModel railwayHallViewModel;
+    private RailwayHallViewModel railwayHallViewModel;
 
     public SimulationPage() {
         setTitle("Simulation Page");
@@ -35,7 +35,7 @@ public class SimulationPage extends JFrame {
             for (int i = 0; i < clients.size(); i++) {
                 clientIds.add(clients.get(i).getId()+"");
             }
-            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), 0, box.getId(), clientIds);
+            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), clientIds);
         }
 
         var clients = railwayHallViewModel.getClients();

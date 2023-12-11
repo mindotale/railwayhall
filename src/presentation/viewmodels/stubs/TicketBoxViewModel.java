@@ -72,7 +72,8 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public boolean isOpen()
     {
-        return true;
+        Random random = new Random();
+        return random.nextBoolean();
     }
 
 }

@@ -77,20 +77,11 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
     }
 
     @Override
-    public boolean isOpen()
-    {
-        return true;
-    }
+    public boolean isOpen() { return model.isOpen(); }
 
     @Override
-    public void closeTicketBox(int id)
-    {
-
-    }
+    public void closeTicketBox(int id) { model.disableTicketBox(id); }
 
     @Override
-    public void openTicketBox(int id)
-    {
-
-    }
+    public void openTicketBox(int id) { model.enableTicketBox(id); }
 }
