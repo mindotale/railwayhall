@@ -33,7 +33,7 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        return new ArrayList<ClientViewModel>();
+        return null;
     }
 
     @Override
