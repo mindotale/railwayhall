@@ -1,9 +1,18 @@
 package presentation.pages.configpage;
 
 
+import domain.common.Vector;
+import domain.entrances.EntranceConfig;
+import domain.railwayhalls.RailwayHall;
+import domain.railwayhalls.RailwayHallConfig;
+import domain.ticketboxes.TicketBoxConfig;
+import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
+import presentation.pages.mainpage.MainPage;
+import presentation.pages.simulationpage.SimulationPage;
+import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -41,8 +50,9 @@ public class ConfigPage extends JFrame {
 
         // Entrances Configuration
         entranceConfigPanels = new ArrayList<>();
+        var idGenerator = new IntegerIdGenerator();
         for (int i = 1; i <= 8; i++) {
-            EntranceConfigPanel entrancePanel = new EntranceConfigPanel(i);
+            EntranceConfigPanel entrancePanel = new EntranceConfigPanel(i, idGenerator);
             entranceConfigPanels.add(entrancePanel);
 
             // Set bounds for entrance components
@@ -51,11 +61,11 @@ public class ConfigPage extends JFrame {
         }
 
         // Reserved Ticket Box Configuration Panel
-        ReservedTicketBoxConfigPanel reservedTicketBoxPanel = new ReservedTicketBoxConfigPanel();
-        reservedTicketBoxPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
-        reservedTicketBoxPanel.setBounds(750, 0, 320, 100);
+        reservedTicketBoxConfigPanel = new ReservedTicketBoxConfigPanel();
+        reservedTicketBoxConfigPanel.setBorder(BorderFactory.createTitledBorder("Reserved Ticket Box"));
+        reservedTicketBoxConfigPanel.setBounds(750, 0, 320, 100);
 
-        panel.add(reservedTicketBoxPanel);
+        panel.add(reservedTicketBoxConfigPanel);
 
         // Client Capacity Configuration Panel
         JPanel clientCapacityPanel = new JPanel(null);
@@ -67,7 +77,7 @@ public class ConfigPage extends JFrame {
         clientCapacityLabel.setBounds(10, 20, 150, 20);
         clientCapacityPanel.add(clientCapacityLabel);
 
-        JTextField clientCapacityField = new JTextField(5);
+        clientCapacityField = new JTextField(5);
         clientCapacityField.setBounds(130, 20, 50, 20);
         clientCapacityPanel.add(clientCapacityField);
 
@@ -76,7 +86,7 @@ public class ConfigPage extends JFrame {
         restartClientCapacityLabel.setBounds(10, 50, 170, 20);
         clientCapacityPanel.add(restartClientCapacityLabel);
 
-        JTextField restartClientCapacityField = new JTextField(5);
+        restartClientCapacityField = new JTextField(5);
         restartClientCapacityField.setBounds(130, 50, 50, 20);
         clientCapacityPanel.add(restartClientCapacityField);
 
@@ -102,9 +112,114 @@ public class ConfigPage extends JFrame {
 
     private void saveConfiguration() {
         try {
-            System.out.println("Configuration saved: " );
+            var resultTicketBoxConfigs = ticketBoxConfigPanels.stream().filter(TicketBoxConfigPanel::isEnabled)
+                    .map(TicketBoxConfigPanel::getTicketBoxConfig).toList();
+            var resultEntranceConfigs = entranceConfigPanels.stream().filter(EntranceConfigPanel::isEnabled)
+                    .map(EntranceConfigPanel::getEntranceConfig).toList();
+
+            var resultReservedTicketBoxConfig = reservedTicketBoxConfigPanel.getTicketBoxConfig();
+
+            var resultClientCapacity = Integer.parseInt(clientCapacityField.getText());
+            var resultrestartClientCapacity = Integer.parseInt(restartClientCapacityField.getText());
+
+            if(ValidateElementsDistance(resultTicketBoxConfigs, resultEntranceConfigs, resultReservedTicketBoxConfig))
+            {
+                var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
+                        resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
+                        resultrestartClientCapacity);
+                var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
+                SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
+            }
+
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private boolean ValidateElementsDistance(List<TicketBoxConfig> ticketBoxConfigList,
+                                             List<EntranceConfig> entranceConfigList,
+                                             TicketBoxConfig reservedTicketBoxConfig) {
+
+        int minimalDistance = 20; // Could be changed for UI developers
+
+        // Compare ticket boxes coordinates
+        if(!hasMinimumGap(ticketBoxConfigList, entranceConfigList, reservedTicketBoxConfig, minimalDistance)) {
+            JOptionPane.showMessageDialog(this, "Invalid coordinates. It should be a " + minimalDistance + " between elements", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Additional validation could be added here (Ping Valera)
+
+        return true;
+    }
+
+    public static boolean hasMinimumGap(List<TicketBoxConfig> ticketBoxConfigList,
+                                        List<EntranceConfig> entranceConfigList,
+                                        TicketBoxConfig reservedTicketBoxConfig,
+                                        int minimalDistance) {
+        // Check for gaps between TicketBoxConfig elements
+        for (int i = 0; i < ticketBoxConfigList.size(); i++) {
+            for (int j = i + 1; j < ticketBoxConfigList.size(); j++) {
+                Vector position1 = ticketBoxConfigList.get(i).getPosition();
+                Vector position2 = ticketBoxConfigList.get(j).getPosition();
+
+                if (!hasMinimumGap(position1, position2, minimalDistance)) {
+                    return false;
+                }
+            }
+        }
+
+        // Check for gaps between EntranceConfig elements
+        for (int i = 0; i < entranceConfigList.size(); i++) {
+            for (int j = i + 1; j < entranceConfigList.size(); j++) {
+                Vector position1 = entranceConfigList.get(i).getPosition();
+                Vector position2 = entranceConfigList.get(j).getPosition();
+
+                if (!hasMinimumGap(position1, position2, minimalDistance)) {
+                    return false;
+                }
+            }
+        }
+
+        // Check for gaps between TicketBoxConfig and EntranceConfig elements
+        for (TicketBoxConfig ticketBox : ticketBoxConfigList) {
+            for (EntranceConfig entrance : entranceConfigList) {
+                Vector position1 = ticketBox.getPosition();
+                Vector position2 = entrance.getPosition();
+
+                if (!hasMinimumGap(position1, position2, minimalDistance)) {
+                    return false;
+                }
+            }
+        }
+
+        // Check for gaps between Reserved TicketBox and TicketBoxConfig
+        for (TicketBoxConfig ticketBox : ticketBoxConfigList) {
+                Vector position1 = ticketBox.getPosition();
+                Vector position2 = reservedTicketBoxConfig.getPosition();
+
+                if (!hasMinimumGap(position1, position2, minimalDistance)) {
+                    return false;
+                }
+        }
+
+        // Check for gaps between Reserved TicketBox and EntranceConfig
+        for (EntranceConfig entrance : entranceConfigList) {
+            Vector position1 = entrance.getPosition();
+            Vector position2 = reservedTicketBoxConfig.getPosition();
+
+            if (!hasMinimumGap(position1, position2, minimalDistance)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean hasMinimumGap(Vector position1, Vector position2, int minimalDistance) {
+        int deltaX = (int) Math.abs(position1.getX() - position2.getX());
+        int deltaY = (int) Math.abs(position1.getY() - position2.getY());
+
+        return deltaX >= minimalDistance && deltaY >= minimalDistance;
     }
 }

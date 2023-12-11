@@ -1,70 +1,74 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
+import java.util.Random;
 
+import domain.common.Vector;
 import domain.ticketboxes.TicketBox;
 import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
 import presentation.viewmodels.abstractions.ClientViewModel;
 
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TicketBoxViewModel implements presentation.viewmodels.abstractions.TicketBoxViewModel {
-    public TicketBoxViewModel(TicketBox ticketBox) {
-        this.model = ticketBox;
-    }
 
     private TicketBox model;
 
+
+
+
+    public TicketBoxViewModel()
+    {
+    }
     @Override
     public int getId()
     {
-        return model.getId();
+        return 1;
     }
 
     @Override
     public presentation.viewmodels.abstractions.PositionViewModel getPosition()
     {
-        return new PositionViewModel(model.getPosition());
+        Random random = new Random();
+        int randomNumber = random.nextInt(500) + 20; // 800 - 20 = 780 + 1 (to include 800)
+
+        return new PositionViewModel(new Vector(randomNumber, randomNumber));
     }
 
     @Override
     public int getClientsCount()
     {
-        return model.getQueueSize();
+        return 0;
     }
 
     @Override
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
-        var clients = model.getQueue();
-        return clients.stream()
-                .map(presentation.viewmodels.ClientViewModel::new)
-                .collect(Collectors.toList());
+        var res = new ArrayList<presentation.viewmodels.abstractions.ClientViewModel>();
+
+        return res;
     }
 
     @Override
     public ClientViewModel getCurrentClient() {
-        return new presentation.viewmodels.ClientViewModel(model.getCurrentClient());
+        return null;
     }
 
     @Override
     public List<ClientProcessingRecordViewModel> getRecords() {
-        var records = model.getRecords();
-        return records.stream()
-                .map(presentation.viewmodels.ClientProcessingRecordViewModel::new)
-                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @Override
     public void clearRecords() {
-        model.clearRecords();
-    }
 
+    }
 
     @Override
     public boolean isOpen()
     {
-        return model.isEnabled();
+        Random random = new Random();
+        return random.nextBoolean();
     }
 
 }

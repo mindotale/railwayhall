@@ -1,48 +1,49 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
 
 import domain.clients.Client;
 import domain.clients.ClientStatus;
+import domain.common.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClientViewModel implements presentation.viewmodels.abstractions.ClientViewModel {
-    private Client model;
+    int x;
 
-    public ClientViewModel(Client client)
+    public ClientViewModel()
     {
-        this.model = client;
+        x = 400;
     }
 
     @Override
     public int getId()
     {
-        return model.getId();
+        return 1;
     }
 
     @Override
     public presentation.viewmodels.abstractions.PositionViewModel getPosition()
     {
-        return new PositionViewModel(model.getPosition());
+        x++;
+        return new PositionViewModel(new Vector(x, x));
     }
 
     @Override
     public double getPriority()
     {
-        return model.getPriority();
+        return 1;
     }
 
     @Override
     public int getTicketsCount()
     {
-        return model.getTickets();
+        return 3;
     }
 
     @Override
     public List<String> getStatuses()
     {
-        return model.getStatuses().stream()
-                .map(ClientStatus::getName)
-                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
 }
