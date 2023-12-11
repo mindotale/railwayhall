@@ -46,6 +46,9 @@ public class ReservedTicketBoxConfigPanel extends JPanel {
     }
 
     public TicketBoxConfig getTicketBoxConfig() {
+        if(!isEnabled())
+            return null;
+
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
         TicketProcessingTimeStrategy strategy = new TicketProcessingTimeStrategy() {
