@@ -4,12 +4,16 @@ import presentation.viewmodels.stubs.ClientViewModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SimulationArea extends JPanel {
-
+    private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
     private List<TicketBoxFigure> figures = new ArrayList<>();
 
     public SimulationArea() {
@@ -21,12 +25,13 @@ public class SimulationArea extends JPanel {
     public void addClientFigure(int posX, int posY, String id) {
         ClientFigure clientFigure = new ClientFigure(posX, posY, id);
         add(clientFigure);
-        clientFigure.setBounds(posX, posY, 20, 20); // Set the bounds of the client figure
+        clientFigure.setBounds(posX, posY, 20, 20);
+        //clientFigures.add(clientFigure);
+        clientFigureMap.put(id, clientFigure);
         repaint();
     }
 
     public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
-
         // Now pass this list to the TicketBoxFigure constructor
         TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, clientIds);
         figures.add(figure);
@@ -35,6 +40,33 @@ public class SimulationArea extends JPanel {
 
         figure.setBounds(posX, posY, 90, 75);
         repaint();
+    }
+
+    public void animateClientMovement(String id, int newX, int newY) {
+        ClientFigure clientFigure = clientFigureMap.get(id);
+        if (clientFigure == null) {
+            return;
+        }
+        Timer timer = new Timer(30, new ActionListener() {
+            private int currentX = clientFigure.posX;
+            private int currentY = clientFigure.posY;
+            private int deltaX = (newX - currentX) / 10; // 10 кроків анімації
+            private int deltaY = (newY - currentY) / 10;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (Math.abs(currentX - newX) > Math.abs(deltaX) || Math.abs(currentY - newY) > Math.abs(deltaY)) {
+                    clientFigure.setPosition(currentX, currentY);
+                    currentX += deltaX;
+                    currentY += deltaY;
+                } else {
+                    ((Timer) e.getSource()).stop();
+                    clientFigure.setPosition(newX, newY);
+                }
+                repaint();
+            }
+        });
+        timer.start();
     }
 
 
@@ -47,9 +79,17 @@ public class SimulationArea extends JPanel {
     }
 
     public class ClientFigure extends JComponent {
-        private final int posX;
-        private final int posY;
+        private  int posX;
+        private  int posY;
         private final String id;
+
+
+        public void setPosition(int x, int y) {
+            this.posX = x;
+            this.posY = y;
+            setBounds(x, y, getWidth(), getHeight());
+            repaint();
+        }
 
         public ClientFigure(int posX, int posY, String id) {
             this.posX = posX;

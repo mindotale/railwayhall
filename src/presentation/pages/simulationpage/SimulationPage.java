@@ -1,6 +1,6 @@
 package presentation.pages.simulationpage;
 
-import presentation.viewmodels.stubs.RailwayHallViewModel;
+import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -13,7 +13,7 @@ import java.util.List;
 public class SimulationPage extends JFrame {
     private RailwayHallViewModel railwayHallViewModel;
 
-    public SimulationPage() {
+    public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(5, 5));
@@ -23,7 +23,7 @@ public class SimulationPage extends JFrame {
         add(createRightPanel(), BorderLayout.EAST);
         add(createActionPanel(), BorderLayout.SOUTH);
 
-        railwayHallViewModel = new RailwayHallViewModel();
+        railwayHallViewModel = railwayHallViewModel;
 
         pack();
         setLocationRelativeTo(null);
@@ -40,11 +40,14 @@ public class SimulationPage extends JFrame {
 
         var clients = railwayHallViewModel.getClients();
         for (var client : clients) {
-            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), "C1");
+            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId()+"");
+            simulationArea.animateClientMovement(client.getId() +"", 300, 100); // Нові координати X та Y
+
         }
 
         setVisible(true);
     }
+
 
     private JPanel createCapacityPanel() {
         JPanel capacityPanel = new JPanel();
@@ -210,11 +213,5 @@ public class SimulationPage extends JFrame {
         simulationArea.setBorder(new TitledBorder("Simulation Area"));
         simulationArea.setPreferredSize(new Dimension(600, 600));
         return simulationArea;
-    }
-
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(SimulationPage::new);
     }
 }
