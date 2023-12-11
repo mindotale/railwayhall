@@ -30,21 +30,21 @@ public class Main {
         }
     }
 
-    private static RailwayHallConfig createRailwayHallConfig() {
+    public static RailwayHallConfig createRailwayHallConfig() {
         var ticketBoxConfigs = createTicketBoxConfigs();
         var reservedTicketBoxConfig = createReservedTicketBoxConfig();
         var entranceConfigs = createEntranceConfigs();
-        var clientCapacity = 50;
-        var restartClientCapacity = 40;
+        var clientCapacity = 5;
+        var restartClientCapacity = 4;
         return new RailwayHallConfig(ticketBoxConfigs, reservedTicketBoxConfig, entranceConfigs, clientCapacity, restartClientCapacity);
     }
 
     private static List<TicketBoxConfig> createTicketBoxConfigs() {
         var strategy = new RandomTicketTimeProcessingStrategy(1,3);
         var configs = new ArrayList<TicketBoxConfig>();
-        configs.add(new TicketBoxConfig(1,new Vector(10, 50), strategy));
-        configs.add(new TicketBoxConfig(2,new Vector(20, 100), strategy));
-        configs.add(new TicketBoxConfig(3,new Vector(30, 70), strategy));
+        configs.add(new TicketBoxConfig(1,new Vector(100, 50), strategy));
+        configs.add(new TicketBoxConfig(2,new Vector(200, 100), strategy));
+        configs.add(new TicketBoxConfig(3,new Vector(300, 70), strategy));
         return configs;
     }
 
@@ -63,14 +63,11 @@ public class Main {
         statuses.add(new ClientStatus("Status 3", 3));
         var configs = new ArrayList<EntranceConfig>();
 
-        configs.add(new EntranceConfig(0, new Vector(40, 10),
+        configs.add(new EntranceConfig(0, new Vector(400, 50),
                 new RandomClientGenerationStrategy(idGenerator, 1, 3, new Vector(40, 10), new Vector(40, 10), 10, 30, 1, 3, statuses)));
 
-        configs.add(new EntranceConfig(1, new Vector(50, 20),
+        configs.add(new EntranceConfig(1, new Vector(50, 350),
                 new RandomClientGenerationStrategy(idGenerator, 1, 4, new Vector(50, 20), new Vector(50, 20), 20, 40, 2, 4, statuses)));
-
-        configs.add(new EntranceConfig(2, new Vector(60, 30),
-                new RandomClientGenerationStrategy(idGenerator, 1, 5, new Vector(60, 30), new Vector(60, 30), 30, 50, 3, 5, statuses)));
         return configs;
     }
 }

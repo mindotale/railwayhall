@@ -1,6 +1,7 @@
 package presentation.pages.configpage;
 
 
+import domain.Main.*;
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
 import domain.railwayhalls.RailwayHall;
@@ -112,7 +113,7 @@ public class ConfigPage extends JFrame {
 
     private void saveConfiguration() {
         try {
-            var resultTicketBoxConfigs = ticketBoxConfigPanels.stream().filter(TicketBoxConfigPanel::isEnabled)
+            /*var resultTicketBoxConfigs = ticketBoxConfigPanels.stream().filter(TicketBoxConfigPanel::isEnabled)
                     .map(TicketBoxConfigPanel::getTicketBoxConfig).toList();
             var resultEntranceConfigs = entranceConfigPanels.stream().filter(EntranceConfigPanel::isEnabled)
                     .map(EntranceConfigPanel::getEntranceConfig).toList();
@@ -123,13 +124,13 @@ public class ConfigPage extends JFrame {
             var resultrestartClientCapacity = Integer.parseInt(restartClientCapacityField.getText());
 
             if(ValidateElementsDistance(resultTicketBoxConfigs, resultEntranceConfigs, resultReservedTicketBoxConfig))
-            {
-                var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
+            {*/
+                /*var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
                         resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
-                        resultrestartClientCapacity);
-                var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
+                        resultrestartClientCapacity);*/
+                var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(domain.Main.createRailwayHallConfig()));
                 SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
-            }
+            //}
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);

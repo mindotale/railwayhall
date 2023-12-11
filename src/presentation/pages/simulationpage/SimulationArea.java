@@ -32,9 +32,9 @@ public class SimulationArea extends JPanel {
         repaint();
     }
 
-    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
+    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
         // Now pass this list to the TicketBoxFigure constructor
-        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, clientIds);
+        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, count);
         figures.add(figure);
         add(figure);
         // Adjust the bounds as needed to fit all the client circles
@@ -51,12 +51,20 @@ public class SimulationArea extends JPanel {
         repaint();
     }
 
+    public boolean isClientOnPage(String id) {
+        ClientFigure clientFigure = clientFigureMap.get(id);
+        if (clientFigure == null) {
+            return false;
+        }
+        return true;
+    }
+
     public void animateClientMovement(String id, int newX, int newY) {
         ClientFigure clientFigure = clientFigureMap.get(id);
         if (clientFigure == null) {
             return;
         }
-        Timer timer = new Timer(30, new ActionListener() {
+        Timer timer = new Timer(10, new ActionListener() {
             private int currentX = clientFigure.posX;
             private int currentY = clientFigure.posY;
             private int deltaX = (newX - currentX) / 10; // 10 кроків анімації
@@ -142,15 +150,13 @@ public class SimulationArea extends JPanel {
         private final int count;
         private final int id;
         private final boolean isOpen;
-        private final List<String> clientIds;
 
-        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
+        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
             this.posX = posX;
             this.posY = posY;
-            this.count = clientIds.size();
+            this.count = count;
             this.id = id;
             this.isOpen = isOpen;
-            this.clientIds = clientIds;
             setOpaque(false);
             // The height now includes space for circles
             setPreferredSize(new Dimension(90, 75)); // Fixed width and height

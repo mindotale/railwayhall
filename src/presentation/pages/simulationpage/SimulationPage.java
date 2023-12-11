@@ -12,9 +12,12 @@ import java.util.List;
 
 public class SimulationPage extends JFrame {
     private final RailwayHallViewModel railwayHallViewModel;
+    private boolean simulationStarted;
+    private Timer simulation;
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
+        simulationStarted = false;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(5, 5));
 
@@ -30,24 +33,17 @@ public class SimulationPage extends JFrame {
 
         addEntrances();
 
+        createTicketBoxes();
+
+        setVisible(true);
+    }
+
+    private void createTicketBoxes() {
         var boxes = railwayHallViewModel.getTicketBoxes();
         for (var box : boxes) {
-            List<String> clientIds = new ArrayList<>();
-            var clients = box.getClients();
-            for (presentation.viewmodels.abstractions.ClientViewModel client : clients) {
-                clientIds.add(client.getId() + "");
-            }
-            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), clientIds);
+            int count = box.getClientsCount();
+            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), count);
         }
-
-        var clients = railwayHallViewModel.getClients();
-        for (var client : clients) {
-            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId()+"");
-            simulationArea.animateClientMovement(client.getId() +"", 300, 100); // Нові координати X та Y
-
-        }
-
-
         setVisible(true);
     }
 
@@ -197,9 +193,35 @@ public class SimulationPage extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Okey let's gooo");
-                railwayHallViewModel.tick();
-                System.out.println(railwayHallViewModel.getTotalClients().get(0).getPosition().getY());
+                if(simulation != null && simulationStarted) {
+                    simulation.stop();
+                    simulationStarted = false;
+                } else if (simulation != null && !simulationStarted) {
+                    simulation.start();
+                    simulationStarted = true;
+                }
+                else {
+                    simulation = new Timer(300, new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            railwayHallViewModel.tick();
+
+                            createTicketBoxes();
+
+                            var clients = railwayHallViewModel.getClients();
+                            for (var client : clients) {
+                                if(!simulationArea.isClientOnPage(client.getId() + "")){
+                                    simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId()+"");
+                                }
+                                simulationArea.animateClientMovement(client.getId() +"", client.getPosition().getX(), client.getPosition().getY()); // Нові координати X та Y
+
+                            }
+                        }
+                    });
+
+                    simulation.start();
+                    simulationStarted = true;
+                }
             }
         });
         actionPanel.add(startButton);
