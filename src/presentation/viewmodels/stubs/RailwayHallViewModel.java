@@ -1,6 +1,7 @@
 package presentation.viewmodels.stubs;
 
 import domain.railwayhalls.RailwayHall;
+import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,16 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
         var res = new ArrayList<presentation.viewmodels.abstractions.ClientViewModel>();
         res.add(new ClientViewModel());
         return res;
+    }
+
+    @Override
+    public List<ClientProcessingRecordViewModel> getTotalRecords() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void clearRecords() {
+
     }
 
     @Override
