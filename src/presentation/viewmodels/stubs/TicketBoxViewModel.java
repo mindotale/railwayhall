@@ -15,18 +15,10 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     private TicketBox model;
 
 
-    private ClientViewModel client;
-    private ClientViewModel client2;
-    private ClientViewModel client3;
-    private ClientViewModel client4;
+
 
     public TicketBoxViewModel()
     {
-        client = new ClientViewModel();
-        client2 = new ClientViewModel();
-        client3 = new ClientViewModel();
-        client4 = new ClientViewModel();
-
     }
     @Override
     public int getId()
@@ -53,21 +45,7 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
     public List<presentation.viewmodels.abstractions.ClientViewModel> getClients()
     {
         var res = new ArrayList<presentation.viewmodels.abstractions.ClientViewModel>();
-        res.add(client);
-        res.add(client2);
-        res.add(client3);
-        res.add(client4);
 
-        res.add(client);
-        res.add(client2);
-        res.add(client3);
-        res.add(client4);
-
-
-        res.add(client);
-        res.add(client2);
-        res.add(client3);
-        res.add(client4);
         return res;
     }
 

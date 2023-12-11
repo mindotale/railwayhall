@@ -10,6 +10,8 @@ import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
+import presentation.pages.mainpage.MainPage;
+import presentation.pages.simulationpage.SimulationPage;
 import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
@@ -126,8 +128,7 @@ public class ConfigPage extends JFrame {
                         resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
                         resultrestartClientCapacity);
                 var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
-                // Create Object of Simulation page and pass railwayHallViewModel
-                // You could add your logic here
+                SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
             }
 
         } catch (NumberFormatException ex) {
