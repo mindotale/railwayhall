@@ -47,6 +47,10 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
             throw new IllegalArgumentException("Statuses collection cannot be null or empty.");
         }
 
+        this.random = new Random(0);
+        this.clients = new ArrayList<>();
+        this.ticks = 0;
+
         this.minGenerationTicks = minGenerationTicks;
         this.maxGenerationTicks = maxGenerationTicks;
         this.minPosition = minPosition;
@@ -57,10 +61,7 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
         this.maxTickets = maxTickets;
         this.statuses = statuses.stream().toList();
 
-        this.clients = new ArrayList<>();
         this.nextGenerationTicks = getRandomValue(minGenerationTicks, maxGenerationTicks);
-        this.ticks = 0;
-        this.random = new Random();
     }
 
     @Override
