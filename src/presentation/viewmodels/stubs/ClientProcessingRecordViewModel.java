@@ -1,30 +1,29 @@
-package presentation.viewmodels;
+package presentation.viewmodels.stubs;
 
 import domain.clients.ClientProcessingRecord;
 
 public class ClientProcessingRecordViewModel implements presentation.viewmodels.abstractions.ClientProcessingRecordViewModel {
-    private ClientProcessingRecord model;
     @Override
     public int getTicketBoxId()
     {
-        return model.getCashDeskId();
+        return 1;
     }
 
     @Override
     public int getClientId()
     {
-        return model.getClientId();
+        return 1;
     }
 
     @Override
     public int getStartTicks()
     {
-        return model.getStartTicks();
+        return 10;
     }
 
     @Override
     public int getEndTicks()
     {
-        return model.getEndTicks();
+        return 12;
     }
 }
