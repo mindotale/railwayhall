@@ -21,10 +21,11 @@ public class Main {
 
         while(true){
             railwayHall.tick();
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if(railwayHall.getTicks() % 100 == 0){
+                railwayHall.disableTicketBox(1);
+            }
+            if(railwayHall.getTicks() % 100 == 20){
+                railwayHall.enableTicketBox(1);
             }
         }
     }
