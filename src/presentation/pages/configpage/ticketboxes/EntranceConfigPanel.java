@@ -32,7 +32,7 @@ public class EntranceConfigPanel extends JPanel {
 
         // Enable Checkbox
         enableCheckBox = new JCheckBox("Enable");
-        enableCheckBox.setSelected(true);
+        enableCheckBox.setSelected(false);
         enableCheckBox.setBounds(160, 10, 80, 20);
         add(enableCheckBox);
 
