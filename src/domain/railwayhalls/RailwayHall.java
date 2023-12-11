@@ -124,18 +124,28 @@ public class RailwayHall implements Ticker {
     }
 
     private void moveClientsToBestTicketBoxes() {
-        clients.forEach((id, client) -> moveClientToBestTicketBox(client));
+        var enqueuedClients = new ArrayList<Client>();
+        for (var client: clients.values()) {
+            var isEnqueued = moveClientToBestTicketBox(client);
+            if(isEnqueued) {
+                enqueuedClients.add(client);
+            }
+        }
+
+        enqueuedClients.forEach(c -> clients.remove(c.getId()));
     }
 
-    private void moveClientToBestTicketBox(Client client) {
+    private boolean moveClientToBestTicketBox(Client client) {
         var bestTicketBox = getBestTicketBox(client);
         if(bestTicketBox == null) {
-            return;
+            return false;
         }
         client.moveTo(bestTicketBox.getPosition());
         if(client.getPosition() == bestTicketBox.getPosition()) {
             bestTicketBox.enqueue(client);
+            return true;
         }
+        return false;
     }
 
     private TicketBox getBestTicketBox(Client client) {
@@ -159,6 +169,7 @@ public class RailwayHall implements Ticker {
 
     private void tickTicketBoxes() {
         ticketBoxes.values().forEach(TicketBox::tick);
+        reservedTicketBox.tick();
     }
 
     private void checkCapacity() {
