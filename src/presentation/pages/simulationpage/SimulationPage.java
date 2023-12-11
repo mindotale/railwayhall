@@ -1,10 +1,15 @@
 package presentation.pages.simulationpage;
 
+import presentation.viewmodels.stubs.RailwayHallViewModel;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SimulationPage extends JFrame {
+    private RailwayHallViewModel railwayHallViewModel;
 
     public SimulationPage() {
         setTitle("Simulation Page");
@@ -15,6 +20,8 @@ public class SimulationPage extends JFrame {
         add(createSimulationArea(), BorderLayout.CENTER);
         add(createRightPanel(), BorderLayout.EAST);
         add(createActionPanel(), BorderLayout.SOUTH);
+
+        railwayHallViewModel = new RailwayHallViewModel();
 
         pack();
         setLocationRelativeTo(null);
@@ -103,7 +110,16 @@ public class SimulationPage extends JFrame {
 
     private JPanel createActionPanel() {
         JPanel actionPanel = new JPanel();
-        actionPanel.add(new JButton("Start / Stop"));
+        JButton startButton = new JButton("Start / Stop");
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Okey let's gooo");
+                railwayHallViewModel.tick();
+                System.out.println(railwayHallViewModel.getTotalClients().get(0).getPriority());
+            }
+        });
+        actionPanel.add(startButton);
         actionPanel.add(new JButton("Cancel"));
         actionPanel.add(new JTextField("Ticket Box ID", 10));
         actionPanel.add(new JButton("Open / Close"));
