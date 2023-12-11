@@ -187,21 +187,7 @@ public class SimulationArea extends JPanel {
             // Draw the TicketBox ID inside the rectangle
             g2d.setColor(Color.BLACK);
             drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
-
-
-            // Constants for the circle
-            int circleDiameter = 20; // Diameter of the circle
-            int circleX = getWidth() - circleDiameter - 5; // Position the circle at the right edge
-            int circleY = 5; // A small margin from the top edge
-
-            // Draw the circle with the count
-            g2d.setColor(Color.BLUE);
-            g2d.fillOval(circleX, circleY, circleDiameter, circleDiameter);
-
-            // Draw the count inside the circle
-            g2d.setColor(Color.WHITE);
-            String countText = String.valueOf(count);
-            drawCenteredString(g2d, countText, circleX, circleY, circleDiameter, circleDiameter);
+            drawCircleWithCount(g2d, this.count, getWidth());
         }
     }
 
@@ -211,12 +197,14 @@ public class SimulationArea extends JPanel {
         private final int id;
         private final boolean isOpen;
         private final List<String> clientIds;
+        private final int count;
         public EntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
             this.posX = posX;
             this.posY = posY;
             this.id = id;
             this.isOpen = isOpen;
             this.clientIds = clientIds;
+            this.count = this.clientIds.size();
             setOpaque(false);
             // The height now includes space for circles
             //setPreferredSize(new Dimension(90, 75)); // Fixed width and height
@@ -240,7 +228,7 @@ public class SimulationArea extends JPanel {
             }
             g2d.setColor(Color.BLACK);
             drawCenteredString(g2d, "EN " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
-
+            drawCircleWithCount(g2d, this.count, getWidth());
         }
     }
     private static void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
@@ -250,5 +238,21 @@ public class SimulationArea extends JPanel {
         int textX = x + (width - textWidth) / 2;
         int textY = y + (height - fm.getDescent()) / 2 + textHeight / 2;
         g.drawString(text, textX, textY);
+    }
+
+    private static void drawCircleWithCount(Graphics2D g2d, int count, int width) {
+        // Constants for the circle
+        int circleDiameter = 20; // Diameter of the circle
+        int circleX = width - circleDiameter - 5; // Position the circle at the right edge
+        int circleY = 5; // A small margin from the top edge
+
+        // Draw the circle with the count
+        g2d.setColor(Color.BLUE);
+        g2d.fillOval(circleX, circleY, circleDiameter, circleDiameter);
+
+        // Draw the count inside the circle
+        g2d.setColor(Color.WHITE);
+        String countText = String.valueOf(count);
+        drawCenteredString(g2d, countText, circleX, circleY, circleDiameter, circleDiameter);
     }
 }
