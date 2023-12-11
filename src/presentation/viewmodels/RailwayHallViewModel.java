@@ -1,12 +1,19 @@
 package presentation.viewmodels;
 
 import domain.railwayhalls.RailwayHall;
+import domain.railwayhalls.RailwayHallConfig;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class RailwayHallViewModel implements presentation.viewmodels.abstractions.RailwayHallViewModel {
     private RailwayHall model;
+
+    public RailwayHallViewModel(RailwayHall hall)
+    {
+        model = hall;
+    }
+
 
     public void tick()
     {
@@ -65,7 +72,28 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
         for (var t : getTicketBoxes()) {
             clients.addAll(t.getClients());
         }
+        for (var t : getTicketBoxes()) {
+            var client = t.getCurrentClient();
+            if(client != null)
+                clients.add(t.getCurrentClient());
+        }
+        for (var e : getEntrances()) {
+            clients.addAll(e.getClients());
+        }
         return clients;
+    }
+
+    @Override
+    public List<presentation.viewmodels.abstractions.ClientProcessingRecordViewModel> getTotalRecords() {
+        var records = model.getRecords();
+        return records.stream()
+                .map(presentation.viewmodels.ClientProcessingRecordViewModel::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void clearRecords() {
+        model.clearRecords();
     }
 
     @Override

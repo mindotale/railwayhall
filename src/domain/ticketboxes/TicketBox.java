@@ -17,8 +17,10 @@ public class TicketBox implements Ticker {
     private final ClientQueue queue;
     private boolean isEnabled;
     private int ticks;
-    private int currentClientId;
-    private int remainingProcessingTicks;
+    private Client currentClient;
+    private int startTicks;
+    private int endTicks;
+    private int processingTicks;
     private final ClientProcessingLog log;
 
     public TicketBox(int id, Vector position, TicketProcessingTimeStrategy ticketProcessingTimeStrategy) {
@@ -48,6 +50,12 @@ public class TicketBox implements Ticker {
 
     public boolean isEnabled() {
         return isEnabled;
+    }
+    public Client getCurrentClient() {
+        return currentClient;
+    }
+    public List<Client> getQueue() {
+        return queue.getAll();
     }
 
     @Override
@@ -96,30 +104,50 @@ public class TicketBox implements Ticker {
 
     private void processCurrentClient()
     {
-        Client currentClient = queue.peek();
         if(currentClient == null) {
-            currentClientId = 0;
-            remainingProcessingTicks = 0;
+            setCurrentClient();
+        }
+
+        if(currentClient == null) {
             return;
         }
-        if(currentClient.getTickets() == 0) {
-            queue.dequeue();
-            processCurrentClient();
+
+        if(currentClient.getTickets() == 0){
+            resetCurrentClient();
+            return;
         }
-        if(currentClientId != currentClient.getId()) {
-            currentClientId = currentClient.getId();
-            remainingProcessingTicks = ticketProcessingTimeStrategy.getTime();
+
+        if(ticks < endTicks) {
+            return;
         }
-        remainingProcessingTicks--;
-        if(remainingProcessingTicks > 0) {
-             return;
-        }
+
         currentClient.processTicket();
-        if(currentClient.getTickets() == 0) {
-            queue.dequeue();
-            currentClientId = 0;
-            remainingProcessingTicks = 0;
+        setProcessingTicks();
+    }
+
+    private void setCurrentClient() {
+        currentClient = queue.dequeue();
+        if(currentClient == null) {
+            resetProcessingTicks();
         }
-        remainingProcessingTicks = ticketProcessingTimeStrategy.getTime();
+
+        setProcessingTicks();
+    }
+
+    private void resetCurrentClient() {
+        currentClient = null;
+        resetProcessingTicks();
+    }
+
+    private void setProcessingTicks() {
+        startTicks = ticks;
+        processingTicks = ticketProcessingTimeStrategy.getTime();
+        endTicks = ticks + processingTicks;
+    }
+
+    private  void resetProcessingTicks() {
+        startTicks = 0;
+        processingTicks = 0;
+        endTicks = 0;
     }
 }

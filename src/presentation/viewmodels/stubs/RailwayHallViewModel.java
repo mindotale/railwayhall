@@ -1,6 +1,7 @@
 package presentation.viewmodels.stubs;
 
 import domain.railwayhalls.RailwayHall;
+import presentation.viewmodels.abstractions.ClientProcessingRecordViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +9,11 @@ import java.util.List;
 public class RailwayHallViewModel implements presentation.viewmodels.abstractions.RailwayHallViewModel {
     private RailwayHall model;
     private TicketBoxViewModel ticketBox;
-    private TicketBoxViewModel ticketBox2;
     private ClientViewModel client;
 
     public RailwayHallViewModel()
     {
         ticketBox = new TicketBoxViewModel();
-        ticketBox2 = new TicketBoxViewModel();
         client = new ClientViewModel();
 
     }
@@ -49,7 +48,6 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
     public List<presentation.viewmodels.abstractions.TicketBoxViewModel> getTicketBoxes() {
         var res =  new ArrayList<presentation.viewmodels.abstractions.TicketBoxViewModel>();
         res.add(ticketBox);
-        res.add(ticketBox2);
         return res;
     }
 
@@ -77,11 +75,30 @@ public class RailwayHallViewModel implements presentation.viewmodels.abstraction
     }
 
     @Override
-    public boolean isOpen() { return model.isOpen(); }
+    public List<ClientProcessingRecordViewModel> getTotalRecords() {
+        return new ArrayList<>();
+    }
 
     @Override
-    public void closeTicketBox(int id) { model.disableTicketBox(id); }
+    public void clearRecords() {
+
+    }
 
     @Override
-    public void openTicketBox(int id) { model.enableTicketBox(id); }
+    public boolean isOpen()
+    {
+        return true;
+    }
+
+    @Override
+    public void closeTicketBox(int id)
+    {
+
+    }
+
+    @Override
+    public void openTicketBox(int id)
+    {
+
+    }
 }
