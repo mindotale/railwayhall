@@ -1,9 +1,15 @@
 package presentation.pages.configpage.ticketboxes;
 
+import domain.clients.ClientStatus;
+import domain.clients.ConstantClientGenerationStrategy;
+import domain.common.IdGenerator;
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class EntranceConfigPanel extends JPanel {
 
@@ -12,9 +18,11 @@ public class EntranceConfigPanel extends JPanel {
     private JComboBox<String> strategyComboBox;
     private JCheckBox enableCheckBox;
     private int entranceNumber;
+    private final IdGenerator<Integer> idGenerator;
 
-    public EntranceConfigPanel(int entranceNumber) {
+    public EntranceConfigPanel(int entranceNumber, IdGenerator<Integer> idGenerator) {
         this.entranceNumber = entranceNumber;
+        this.idGenerator = idGenerator;
         setLayout(null); // Use null layout
 
         // Ticket Box Number
@@ -51,7 +59,7 @@ public class EntranceConfigPanel extends JPanel {
         strategyLabel.setBounds(10, 70, 150, 20);
         add(strategyLabel);
 
-        String[] strategies = {"Strategy1", "Strategy2", "Strategy3"}; // Replace with your actual strategies
+        String[] strategies = {"Constant", "Random"}; // Replace with your actual strategies
         strategyComboBox = new JComboBox<>(strategies);
         strategyComboBox.setBounds(160, 70, 150, 20);
         add(strategyComboBox);
@@ -65,8 +73,9 @@ public class EntranceConfigPanel extends JPanel {
 
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
-
-        return new EntranceConfig(entranceNumber, new Vector(xCoordinate, yCoordinate),null);
-
+        var position = new Vector(xCoordinate, yCoordinate);
+        var statuses = new ArrayList<ClientStatus>();
+        var strategy = new ConstantClientGenerationStrategy(idGenerator, 3, position, 10, 1, statuses);
+        return new EntranceConfig(entranceNumber, position, strategy);
     }
 }

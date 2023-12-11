@@ -1,6 +1,8 @@
 package presentation.pages.configpage.ticketboxes;
 
 import domain.common.Vector;
+import domain.ticketboxes.ConstantTicketTimeProcessingStrategy;
+import domain.ticketboxes.RandomTicketTimeProcessingStrategy;
 import domain.ticketboxes.TicketBoxConfig;
 import domain.ticketboxes.TicketProcessingTimeStrategy;
 
@@ -52,7 +54,7 @@ public class TicketBoxConfigPanel extends JPanel {
         strategyLabel.setBounds(10, 70, 150, 20);
         add(strategyLabel);
 
-        String[] strategies = {"Strategy1", "Strategy2", "Strategy3"}; // Replace with your actual strategies
+        String[] strategies = {"Constant", "Random"};
         strategyComboBox = new JComboBox<>(strategies);
         strategyComboBox.setBounds(160, 70, 150, 20);
         add(strategyComboBox);
@@ -66,13 +68,19 @@ public class TicketBoxConfigPanel extends JPanel {
             return null;
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
-        TicketProcessingTimeStrategy strategy = new TicketProcessingTimeStrategy() {
-            @Override
-            public int getTime() {
-                return 0;
-            }
-        };
+        var position = new Vector(xCoordinate, yCoordinate);
+        var strategyName = (String)strategyComboBox.getSelectedItem();
+        var strategy = createStrategy(strategyName);
+        return new TicketBoxConfig(ticketBoxNumber, position, strategy);
+    }
 
-        return new TicketBoxConfig(ticketBoxNumber, new Vector(xCoordinate, yCoordinate), strategy);
+    private static TicketProcessingTimeStrategy createStrategy(String name)
+    {
+        switch (name){
+            case "Random":
+                return new RandomTicketTimeProcessingStrategy(1, 3);
+            default:
+                return new ConstantTicketTimeProcessingStrategy(1);
+        }
     }
 }
