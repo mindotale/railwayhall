@@ -41,13 +41,16 @@ public class ReservedTicketBoxConfigPanel extends JPanel {
         strategyLabel.setBounds(10, 70, 150, 20);
         add(strategyLabel);
 
-        String[] strategies = {"Constant", "Random"};
+        String[] strategies = {"Strategy1", "Strategy2", "Strategy3"}; // Replace with your actual strategies
         strategyComboBox = new JComboBox<>(strategies);
         strategyComboBox.setBounds(160, 70, 150, 20);
         add(strategyComboBox);
     }
 
     public TicketBoxConfig getTicketBoxConfig() {
+        if(!isEnabled())
+            return null;
+
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
         var position = new Vector(xCoordinate, yCoordinate);

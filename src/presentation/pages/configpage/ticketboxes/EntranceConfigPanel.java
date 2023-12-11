@@ -64,8 +64,13 @@ public class EntranceConfigPanel extends JPanel {
         strategyComboBox.setBounds(160, 70, 150, 20);
         add(strategyComboBox);
     }
-
+    public boolean isEnabled() {
+        return enableCheckBox.isSelected();
+    }
     public EntranceConfig getEntranceConfig() {
+        if(!isEnabled())
+            return null;
+
         int xCoordinate = Integer.parseInt(xCoordinateField.getText());
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
         var position = new Vector(xCoordinate, yCoordinate);
