@@ -3,10 +3,7 @@ package domain.clients;
 import domain.common.IdGenerator;
 import domain.common.Vector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class RandomClientGenerationStrategy implements ClientGenerationStrategy {
     private final int minGenerationTicks;
@@ -102,15 +99,15 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
     }
 
     private List<ClientStatus> getRandomClientStatuses() {
-        int numberOfStatuses = random.nextInt(statuses.size() + 1); // Random count of statuses
-        List<ClientStatus> randomStatuses = new ArrayList<>();
+        Set<ClientStatus> uniqueStatuses = new HashSet<>();
+        int numberOfStatuses = random.nextInt(statuses.size() + 1);
 
-        for (int i = 0; i < numberOfStatuses; i++) {
+        while (uniqueStatuses.size() < numberOfStatuses) {
             int index = random.nextInt(statuses.size());
-            randomStatuses.add(statuses.get(index));
+            uniqueStatuses.add(statuses.get(index));
         }
 
-        return randomStatuses;
+        return new ArrayList<>(uniqueStatuses);
     }
 
     private double getRandomValue(double min, double max) {
