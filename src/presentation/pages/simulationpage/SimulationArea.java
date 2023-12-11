@@ -15,6 +15,7 @@ import java.util.Map;
 public class SimulationArea extends JPanel {
     private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
     private List<TicketBoxFigure> figures = new ArrayList<>();
+    private List<EntranceFigure> entrancesFigures = new ArrayList<>();
 
     public SimulationArea() {
         setLayout(null); // Use absolute layout to place figures
@@ -39,6 +40,14 @@ public class SimulationArea extends JPanel {
         // Adjust the bounds as needed to fit all the client circles
 
         figure.setBounds(posX, posY, 90, 75);
+        repaint();
+    }
+
+    public void addEntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientsIds) {
+        EntranceFigure entrance = new EntranceFigure(posX, posY, id, isOpen, clientsIds);
+        entrancesFigures.add(entrance);
+        add(entrance);
+        entrance.setBounds(posX, posY, 90, 75);
         repaint();
     }
 
@@ -76,11 +85,14 @@ public class SimulationArea extends JPanel {
         for (ClientFigure clientFigure : clientFigures) {
             clientFigure.paintComponent(g); // This will paint each client figure
         }
+        for (EntranceFigure entr : entrancesFigures) {
+            entr.paintComponent(g);
+        }
     }
 
     public class ClientFigure extends JComponent {
-        private  int posX;
-        private  int posY;
+        private int posX;
+        private int posY;
         private final String id;
 
 
@@ -153,15 +165,11 @@ public class SimulationArea extends JPanel {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // Draw the TicketBox rectangle
-            if(isOpen) {
+            if (isOpen) {
                 g2d.setColor(new Color(144, 238, 144)); // Light green color
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-                // Draw the TicketBox ID inside the rectangle
-                g2d.setColor(Color.BLACK);
-                drawCenteredString(g2d, "TB " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
-            }
-            else {
+            } else {
                 g2d.setColor(Color.LIGHT_GRAY);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
@@ -169,11 +177,10 @@ public class SimulationArea extends JPanel {
                 g2d.setColor(Color.BLACK);
                 drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
 
-                // Draw the TicketBox ID inside the rectangle
-                g2d.setColor(Color.BLACK);
-                drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
             }
-
+            // Draw the TicketBox ID inside the rectangle
+            g2d.setColor(Color.BLACK);
+            drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
 
 
             // Constants for the circle
@@ -190,15 +197,52 @@ public class SimulationArea extends JPanel {
             String countText = String.valueOf(count);
             drawCenteredString(g2d, countText, circleX, circleY, circleDiameter, circleDiameter);
         }
+    }
 
-        // Utility method to draw a string centered in a given rectangle
-        private void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
-            FontMetrics fm = g.getFontMetrics();
-            int textWidth = fm.stringWidth(text);
-            int textHeight = fm.getAscent();
-            int textX = x + (width - textWidth) / 2;
-            int textY = y + (height - fm.getDescent()) / 2 + textHeight / 2;
-            g.drawString(text, textX, textY);
+    private static class EntranceFigure extends JComponent {
+        private final int posX;
+        private final int posY;
+        private final int id;
+        private final boolean isOpen;
+        private final List<String> clientIds;
+        public EntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
+            this.posX = posX;
+            this.posY = posY;
+            this.id = id;
+            this.isOpen = isOpen;
+            this.clientIds = clientIds;
+            setOpaque(false);
+            // The height now includes space for circles
+            //setPreferredSize(new Dimension(90, 75)); // Fixed width and height
         }
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-}}
+            if (isOpen) {
+                g2d.setColor(new Color(173, 216, 230)); // Light blue color
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+            } else {
+                g2d.setColor(Color.LIGHT_GRAY);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+
+                // Draw Disabled if entrance is closed
+                g2d.setColor(Color.BLACK);
+                drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
+            }
+            g2d.setColor(Color.BLACK);
+            drawCenteredString(g2d, "EN " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
+
+        }
+    }
+    private static void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        int textHeight = fm.getAscent();
+        int textX = x + (width - textWidth) / 2;
+        int textY = y + (height - fm.getDescent()) / 2 + textHeight / 2;
+        g.drawString(text, textX, textY);
+    }
+}
