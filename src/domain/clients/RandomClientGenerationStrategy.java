@@ -1,5 +1,6 @@
 package domain.clients;
 
+import domain.common.IdGenerator;
 import domain.common.Vector;
 
 import java.util.ArrayList;
@@ -18,17 +19,18 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
     private final int maxTickets;
     private final List<ClientStatus> statuses;
     private final List<Client> clients;
+    private final IdGenerator<Integer> idGenerator;
 
     private int nextGenerationTicks;
     private int ticks;
-    private int idCounter;
     private final Random random;
 
-    public RandomClientGenerationStrategy(int initialId, int minGenerationTicks, int maxGenerationTicks,
+    public RandomClientGenerationStrategy(IdGenerator<Integer> idGenerator, int minGenerationTicks, int maxGenerationTicks,
                                           Vector minPosition, Vector maxPosition,
                                           double minVelocity, double maxVelocity,
                                           int minTickets, int maxTickets,
                                           Collection<ClientStatus> statuses) {
+        this.idGenerator = idGenerator;
         if (minGenerationTicks <= 0 || maxGenerationTicks <= 0 || minGenerationTicks > maxGenerationTicks) {
             throw new IllegalArgumentException("Invalid generation time range.");
         }
@@ -58,7 +60,6 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
         this.clients = new ArrayList<>();
         this.nextGenerationTicks = getRandomValue(minGenerationTicks, maxGenerationTicks);
         this.ticks = 0;
-        this.idCounter = initialId;
         this.random = new Random();
     }
 
@@ -86,7 +87,7 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
     }
 
     private Client generateRandomClient() {
-        idCounter++;
+        var id = idGenerator.generateId();
         Vector randomPosition = new Vector(
                 getRandomValue(minPosition.getX(), maxPosition.getX()),
                 getRandomValue(minPosition.getY(), maxPosition.getY())
@@ -96,7 +97,7 @@ public class RandomClientGenerationStrategy implements ClientGenerationStrategy 
 
         List<ClientStatus> randomStatuses = getRandomClientStatuses();
 
-        return new Client(idCounter, randomPosition, randomVelocity, randomTickets, randomStatuses);
+        return new Client(id, randomPosition, randomVelocity, randomTickets, randomStatuses);
     }
 
     private List<ClientStatus> getRandomClientStatuses() {

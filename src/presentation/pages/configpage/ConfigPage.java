@@ -1,6 +1,7 @@
 package presentation.pages.configpage;
 
 
+import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
@@ -41,8 +42,9 @@ public class ConfigPage extends JFrame {
 
         // Entrances Configuration
         entranceConfigPanels = new ArrayList<>();
+        var idGenerator = new IntegerIdGenerator();
         for (int i = 1; i <= 8; i++) {
-            EntranceConfigPanel entrancePanel = new EntranceConfigPanel(i);
+            EntranceConfigPanel entrancePanel = new EntranceConfigPanel(i, idGenerator);
             entranceConfigPanels.add(entrancePanel);
 
             // Set bounds for entrance components

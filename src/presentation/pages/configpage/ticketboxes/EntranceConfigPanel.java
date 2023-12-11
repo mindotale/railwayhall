@@ -2,6 +2,7 @@ package presentation.pages.configpage.ticketboxes;
 
 import domain.clients.ClientStatus;
 import domain.clients.ConstantClientGenerationStrategy;
+import domain.common.IdGenerator;
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
 
@@ -16,9 +17,11 @@ public class EntranceConfigPanel extends JPanel {
     private JComboBox<String> strategyComboBox;
     private JCheckBox enableCheckBox;
     private int entranceNumber;
+    private final IdGenerator<Integer> idGenerator;
 
-    public EntranceConfigPanel(int entranceNumber) {
+    public EntranceConfigPanel(int entranceNumber, IdGenerator<Integer> idGenerator) {
         this.entranceNumber = entranceNumber;
+        this.idGenerator = idGenerator;
         setLayout(null); // Use null layout
 
         // Ticket Box Number
@@ -66,7 +69,7 @@ public class EntranceConfigPanel extends JPanel {
         int yCoordinate = Integer.parseInt(yCoordinateField.getText());
 
         return new EntranceConfig(entranceNumber, new Vector(xCoordinate, yCoordinate),
-                new ConstantClientGenerationStrategy(1, 1,
+                new ConstantClientGenerationStrategy(idGenerator, 1,
                         new Vector(xCoordinate, yCoordinate), 1, 1, new Collection<ClientStatus>() {
                     @Override
                     public int size() {
