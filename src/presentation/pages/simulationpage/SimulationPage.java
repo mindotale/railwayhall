@@ -276,6 +276,10 @@ public class SimulationPage extends JFrame {
                     for(var box: boxes){
                         simulationArea.removeTicketBoxFigure(box.getId());
                     }
+
+                    var rbox = railwayHallViewModel.getReservedTicketBox();
+                    simulationArea.removeTicketBoxFigure(rbox.getId());
+
                     addTicketBoxes();
                     addReservedTicketBoxes();
                     addEntrances();

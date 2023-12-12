@@ -2,31 +2,59 @@ package presentation.pages.simulationpage;
 
 import presentation.viewmodels.abstractions.ClientViewModel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.net.URL;
+
 public class SimulationArea extends JPanel {
+    private BufferedImage background;
+
+    public SimulationArea() {
+        setLayout(null); // Use absolute layout to place figures
+        loadBackgroundImage();
+    }
+
+    private void loadBackgroundImage() {
+        try {
+            URL imageUrl = getClass().getResource("floor.jpg");
+            background = ImageIO.read(imageUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+            background = null;
+        }
+    }
+
+
     private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
     private Map<Integer, TicketBoxFigure> ticketboxFigureMap = new HashMap<>();
     private List<EntranceFigure> entrancesFigures = new ArrayList<>();
 
-    public SimulationArea() {
-        setLayout(null); // Use absolute layout to place figures
-    }
+
 
     private List<ClientFigure> clientFigures = new ArrayList<>();
 
     public void addClientFigure(int posX, int posY, String id) {
         ClientFigure clientFigure = new ClientFigure(posX, posY, id);
         add(clientFigure);
-        clientFigure.setBounds(posX, posY, 20, 20);
+        clientFigure.setBounds(posX, posY, 40, 40);
         //clientFigures.add(clientFigure);
         clientFigureMap.put(id, clientFigure);
         repaint();
@@ -90,6 +118,9 @@ public class SimulationArea extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (background != null) {
+            g.drawImage(background, 0, 0, this.getWidth(), this.getHeight(), this);
+        }
         for (ClientFigure clientFigure : clientFigures) {
             clientFigure.paintComponent(g); // This will paint each client figure
         }
@@ -129,6 +160,40 @@ public class SimulationArea extends JPanel {
         private final String id;
         private int deltaX;
         private int deltaY;
+        private BufferedImage clientImage = null;
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            if (clientImage != null) {
+                g2d.drawImage(clientImage, 0, 0, getWidth(), getHeight(), this);
+            }
+
+            drawCenteredStringWithBackground(g2d, id, 0, 0, getWidth(), getHeight());
+        }
+
+        private void drawCenteredStringWithBackground(Graphics2D g, String text, int x, int y, int width, int height) {
+            FontMetrics fm = g.getFontMetrics();
+            int textWidth = fm.stringWidth(text);
+            int textHeight = fm.getAscent();
+            int rectX = (width - textWidth) / 2 - 5; // 5px padding
+            int rectY = (height - textHeight) / 2 + fm.getAscent() - textHeight - 5; // 5px padding
+            int rectWidth = textWidth + 10; // 10px total padding
+            int rectHeight = textHeight + 10; // 10px total padding
+
+            // Draw the text background
+            g.setColor(Color.WHITE);
+            g.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+            // Draw the client ID
+            int textX = x + (width - textWidth) / 2;
+            int textY = y + (height - fm.getDescent()) / 2 + fm.getAscent();
+            g.setColor(Color.BLACK);
+            g.drawString(text, textX, textY);
+        }
 
 
         public void setPosition(int x, int y) {
@@ -142,23 +207,14 @@ public class SimulationArea extends JPanel {
             this.posX = posX;
             this.posY = posY;
             this.id = id;
+            try {
+                URL imageUrl = getClass().getResource("client.png");
+                clientImage = ImageIO.read(imageUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             setOpaque(false);
             setPreferredSize(new Dimension(20, 20)); // Assuming each client is represented by a 20x20 area
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Draw the client as a circle
-            g2d.setColor(Color.BLUE);
-            g2d.fillOval(0, 0, getWidth(), getHeight()); // Fill the oval with the size of the component
-
-            // Draw the client ID inside the circle
-            g2d.setColor(Color.WHITE);
-            drawCenteredString(g2d, id, 0, 0, getWidth(), getHeight());
         }
 
         private void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
@@ -192,33 +248,45 @@ public class SimulationArea extends JPanel {
             setPreferredSize(new Dimension(90, 75)); // Fixed width and height
         }
 
-        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            if (isReserved){
-                g2d.setColor(new Color(144, 138, 44));
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
-            } else
-            if (isOpen) {
-                g2d.setColor(new Color(144, 238, 144)); // Light green color
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
-
-            } else
-            {
-                g2d.setColor(Color.LIGHT_GRAY);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
-
-                g2d.setColor(Color.BLACK);
-                drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
-
+            BufferedImage boxImage = null;
+            try {
+                URL imageUrl;
+                if (isReserved) {
+                    imageUrl = getClass().getResource("rbox.png");
+                } else{
+                    imageUrl = getClass().getResource("box.png");
+                }
+                boxImage = ImageIO.read(imageUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            if (boxImage != null) {
+                Image scaledImage = boxImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
+                g2d.drawImage(scaledImage, 0, 0, this);
+            } else {
+                if (isReserved) {
+                    g2d.setColor(new Color(144, 138, 44));
+                } else if (isOpen) {
+                    g2d.setColor(new Color(144, 238, 144)); // Light green color
+                } else {
+                    g2d.setColor(Color.LIGHT_GRAY);
+                    // Draw "Disabled" text if needed
+                }
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+            }
+
+            // Решта коду залишається незмінною
             g2d.setColor(Color.BLACK);
-            drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
+            drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight());
             drawCircleWithCount(g2d, this.count, getWidth());
         }
+
     }
 
     private static class EntranceFigure extends JComponent {
@@ -244,31 +312,60 @@ public class SimulationArea extends JPanel {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            BufferedImage image;
+            try {
+                // Завантаження зображення з ресурсів (змініть шлях до вашого файлу)
+                URL imageUrl = getClass().getResource("door.png");
+                image = ImageIO.read(imageUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+                image = null;
+            }
+            if (image != null) {
+                if (!isOpen) {
+                    // Встановлення напівпрозорості
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                }
+                // Відображення зображення
+                g2d.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+                // Повернення до повної непрозорості
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+            }
 
-            if (isOpen) {
-                g2d.setColor(new Color(173, 216, 230)); // Light blue color
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
-            } else {
-                g2d.setColor(Color.LIGHT_GRAY);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
-
-                // Draw Disabled if entrance is closed
-                g2d.setColor(Color.BLACK);
+            // Додатковий код для відображення тексту
+            g2d.setColor(Color.BLACK);
+            if (!isOpen) {
                 drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
             }
-            g2d.setColor(Color.BLACK);
-            drawCenteredString(g2d, "EN " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
-            drawCircleWithCount(g2d, this.count, getWidth());
+            drawCenteredString(g2d, "EN " + id, 0, 0, getWidth(), getHeight());
+            // Тут ваш код для drawCircleWithCount...
+             drawCircleWithCount(g2d, this.count, getWidth());
         }
     }
     private static void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
         FontMetrics fm = g.getFontMetrics();
         int textWidth = fm.stringWidth(text);
         int textHeight = fm.getAscent();
+
+        // Вирахування позиції для тексту
         int textX = x + (width - textWidth) / 2;
-        int textY = y + (height - fm.getDescent()) / 2 + textHeight / 2;
+        int textY = y + (height - fm.getHeight()) / 2 + fm.getAscent();
+
+        // Вирахування позиції для прямокутника заливки
+        int rectX = textX - 5; // 5 пікселів padding зліва
+        int rectY = textY - textHeight; // Вирахування верхньої координати
+        int rectWidth = textWidth + 10; // Додавання 5 пікселів padding з обох сторін
+        int rectHeight = textHeight + 5; // Додавання 5 пікселів padding знизу
+
+        // Малюємо білий прямокутник позаду тексту
+        g.setColor(Color.WHITE);
+        g.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+        // Малюємо текст поверх прямокутника
+        g.setColor(Color.BLACK);
         g.drawString(text, textX, textY);
     }
+
 
     private static void drawCircleWithCount(Graphics2D g2d, int count, int width) {
         // Constants for the circle
