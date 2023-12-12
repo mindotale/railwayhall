@@ -44,7 +44,11 @@ public class TicketBoxViewModel implements presentation.viewmodels.abstractions.
 
     @Override
     public ClientViewModel getCurrentClient() {
-        return new presentation.viewmodels.ClientViewModel(model.getCurrentClient());
+        var client = model.getCurrentClient();
+        if(client == null)
+            return null;
+        return new presentation.viewmodels.ClientViewModel(client);
+
     }
 
     @Override
