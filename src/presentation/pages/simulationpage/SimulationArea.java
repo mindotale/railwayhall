@@ -254,7 +254,7 @@ public class SimulationArea extends JPanel {
             BufferedImage boxImage = null;
             try {
                 URL imageUrl;
-                if (isReserved) {
+                if (!isOpen) {
                     imageUrl = getClass().getResource("rbox.png");
                 } else{
                     imageUrl = getClass().getResource("box.png");
@@ -266,7 +266,12 @@ public class SimulationArea extends JPanel {
 
             if (boxImage != null) {
                 Image scaledImage = boxImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
-                g2d.drawImage(scaledImage, 0, 0, this);
+                if (isReserved){
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                }
+                    g2d.drawImage(scaledImage, 0, 0, this);
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+
             } else {
                 if (isReserved) {
                     g2d.setColor(new Color(144, 138, 44));
