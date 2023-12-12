@@ -159,7 +159,7 @@ public class SimulationArea extends JPanel {
         private final int posY;
         private final int count;
         private final int id;
-        private final boolean isOpen;
+        public boolean isOpen;
 
         public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
             this.posX = posX;
