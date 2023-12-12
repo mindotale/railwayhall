@@ -13,7 +13,7 @@ public final class ClientProcessingRecord {
         if (clientId < 0) {
             throw new IllegalArgumentException("Client ID must be non-negative.");
         }
-        if (!isValidTicks(startTicks, endTicks)) {
+        if (isInvalidTicks(startTicks, endTicks)) {
             throw new IllegalArgumentException("Invalid start or end ticks.");
         }
 
@@ -23,7 +23,7 @@ public final class ClientProcessingRecord {
         this.endTicks = endTicks;
     }
 
-    private static boolean isValidTicks ( int startTicks, int endTicks){
+    private static boolean isInvalidTicks ( int startTicks, int endTicks){
         return startTicks < 0 || endTicks < 0 || startTicks > endTicks;
     }
 
