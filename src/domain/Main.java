@@ -71,7 +71,6 @@ public class Main {
 
         configs.add(new EntranceConfig(2, new Vector(60, 30),
                 new RandomClientGenerationStrategy(idGenerator, 1, 5, new Vector(60, 30), new Vector(60, 30), 30, 50, 3, 5, statuses)));
-
         return configs;
     }
 }

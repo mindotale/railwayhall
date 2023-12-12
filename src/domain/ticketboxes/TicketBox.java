@@ -51,6 +51,12 @@ public class TicketBox implements Ticker {
     public boolean isEnabled() {
         return isEnabled;
     }
+    public Client getCurrentClient() {
+        return currentClient;
+    }
+    public List<Client> getQueue() {
+        return queue.getAll();
+    }
 
     @Override
     public int getTicks() {

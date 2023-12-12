@@ -3,12 +3,16 @@ package presentation.pages.configpage;
 
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
+import domain.railwayhalls.RailwayHall;
 import domain.railwayhalls.RailwayHallConfig;
 import domain.ticketboxes.TicketBoxConfig;
 import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
 import presentation.pages.configpage.ticketboxes.ReservedTicketBoxConfigPanel;
 import presentation.pages.configpage.ticketboxes.TicketBoxConfigPanel;
+import presentation.pages.mainpage.MainPage;
+import presentation.pages.simulationpage.SimulationPage;
+import presentation.viewmodels.RailwayHallViewModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -123,8 +127,8 @@ public class ConfigPage extends JFrame {
                 var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
                         resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
                         resultrestartClientCapacity);
-                // Route to UI Page
-                // You could add your logic here
+                var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
+                SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
             }
 
         } catch (NumberFormatException ex) {
