@@ -19,6 +19,7 @@ public class SimulationPage extends JFrame {
     private boolean simulationStarted;
     private Timer simulation;
     private String currentPanel = "General";
+    JLabel capacity;
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
         setTitle("Simulation Page");
@@ -32,7 +33,7 @@ public class SimulationPage extends JFrame {
         add(createActionPanel(), BorderLayout.SOUTH);
 
         this.railwayHallViewModel = railwayHallViewModel;
-
+        capacity.setText(railwayHallViewModel.getClientCapacity() + "/" + railwayHallViewModel.getRestartCapacity());
         pack();
         setLocationRelativeTo(null);
 
@@ -54,7 +55,7 @@ public class SimulationPage extends JFrame {
 
     private void addEntrances() {
         var entrances = railwayHallViewModel.getEntrances();
-        for(var entrance : entrances) {
+        for (var entrance : entrances) {
             List<String> clientIds = new ArrayList<>();
             var clients = entrance.getClients();
             for (presentation.viewmodels.abstractions.ClientViewModel client : clients) {
@@ -68,7 +69,8 @@ public class SimulationPage extends JFrame {
     private JPanel createCapacityPanel() {
         JPanel capacityPanel = new JPanel();
         capacityPanel.setBorder(new TitledBorder("Capacity"));
-        capacityPanel.add(new JLabel("16/50"));
+        capacity = new JLabel();
+        capacityPanel.add(capacity);
         return capacityPanel;
     }
 
@@ -243,63 +245,78 @@ public class SimulationPage extends JFrame {
     private JPanel createActionPanel() {
         JPanel actionPanel = new JPanel();
         JButton startButton = new JButton("Start / Stop");
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(simulation != null && simulationStarted) {
-                    simulation.stop();
-                    simulationStarted = false;
-                } else if (simulation != null && !simulationStarted) {
-                    simulation.start();
-                    simulationStarted = true;
-                }
-                else {
-                    simulation = new Timer(300, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            railwayHallViewModel.tick();
+        startButton.addActionListener(e -> {
+            if (simulation != null && simulationStarted) {
+                simulation.stop();
+                simulationStarted = false;
+            } else if (simulation != null && !simulationStarted) {
+                simulation.start();
+                simulationStarted = true;
+            } else {
+                simulation = new Timer(300, e1 -> {
+                    railwayHallViewModel.tick();
 
                             updateItemsPanel(currentPanel);
 
                             addTicketBoxes();
                             addEntrances();
 
-                            var clients = railwayHallViewModel.getClients();
-                            for (String clientId : new ArrayList<>(simulationArea.getClientFigureMap().keySet())) {
-                                boolean clientExists = false;
-                                for (var client : clients) {
-                                    if (client.getId() == Integer.parseInt(clientId)) {
-                                        clientExists = true;
-                                        break;
-                                    }
-                                }
-
-                                // Якщо клієнта немає у списку 'clients', видалити його з SimulationArea
-                                if (!clientExists) {
-                                    simulationArea.removeClientFigure(clientId);
-                                }
-                            }
-
-                            for (var client : clients) {
-                                if(!simulationArea.isClientOnPage(client.getId() + "")){
-                                    simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId()+"");
-                                }
-                                simulationArea.animateClientMovement(client.getId() +"", client.getPosition().getX(), client.getPosition().getY()); // Нові координати X та Y
+                    var clients = railwayHallViewModel.getClients();
+                    for (String clientId : new ArrayList<>(simulationArea.getClientFigureMap().keySet())) {
+                        boolean clientExists = false;
+                        for (var client : clients) {
+                            if (client.getId() == Integer.parseInt(clientId)) {
+                                clientExists = true;
+                                break;
                             }
                         }
-                    });
 
-                    simulation.start();
-                    simulationStarted = true;
-                }
+                        // Якщо клієнта немає у списку 'clients', видалити його з SimulationArea
+                        if (!clientExists) {
+                            simulationArea.removeClientFigure(clientId);
+                        }
+                    }
+
+                    for (var client : clients) {
+                        if (!simulationArea.isClientOnPage(client.getId() + "")) {
+                            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId() + "");
+                        }
+                        simulationArea.animateClientMovement(client.getId() + "", client.getPosition().getX(), client.getPosition().getY()); // Нові координати X та Y
+                    }
+                });
+
+                simulation.start();
+                simulationStarted = true;
             }
         });
+
+        //actionPanel.add(new JButton("Cancel"));
+        JTextField ticketboxid = new JTextField("Ticket Box ID", 10);
+        // create and add listener to open/close button
+        JButton openCloseBut = new JButton("Open / Close");
+        openCloseBut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                var deskId = Integer.parseInt(ticketboxid.getText());
+                var tickBox = railwayHallViewModel.getTicketBoxes().get(deskId);
+                if (tickBox.isOpen())
+                    railwayHallViewModel.closeTicketBox(tickBox.getId());
+                else
+                    railwayHallViewModel.openTicketBox(tickBox.getId());
+                updateTicketBox(deskId, tickBox.isOpen());
+            }
+        });
+
         actionPanel.add(startButton);
-        actionPanel.add(new JButton("Cancel"));
-        actionPanel.add(new JTextField("Ticket Box ID", 10));
-        actionPanel.add(new JButton("Open / Close"));
+        actionPanel.add(ticketboxid);
+        actionPanel.add(openCloseBut);
         return actionPanel;
     }
+
+    private void updateTicketBox(int id, boolean isOpen) {
+        //simulationArea.updateTicketBox(id, isOpen);
+    }
+
     private SimulationArea simulationArea;
 
     private JPanel createSimulationArea() {
