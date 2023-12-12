@@ -40,9 +40,17 @@ public class SimulationPage extends JFrame {
         setLocationRelativeTo(null);
 
         addEntrances();
-
         addTicketBoxes();
+        addReservedTicketBoxes();
 
+
+        setVisible(true);
+    }
+
+    private void addReservedTicketBoxes(){
+        var box = railwayHallViewModel.getReservedTicketBox();
+        System.out.println(box.isOpen());
+        simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), box.getClientsCount(),true);
         setVisible(true);
     }
 
@@ -50,7 +58,7 @@ public class SimulationPage extends JFrame {
         var boxes = railwayHallViewModel.getTicketBoxes();
         for (var box : boxes) {
             int count = box.getClientsCount();
-            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), count);
+            simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), count, false);
         }
         setVisible(true);
     }
@@ -260,6 +268,10 @@ public class SimulationPage extends JFrame {
                 simulation = new Timer(300, e1 -> {
                     railwayHallViewModel.tick();
 
+                    var boxes = railwayHallViewModel.getTicketBoxes();
+                    for(var box: boxes){
+                        simulationArea.removeTicketBoxFigure(box.getId());
+                    }
                     addTicketBoxes();
                     addEntrances();
 
@@ -273,7 +285,6 @@ public class SimulationPage extends JFrame {
                             }
                         }
 
-                        // Якщо клієнта немає у списку 'clients', видалити його з SimulationArea
                         if (!clientExists) {
                             simulationArea.removeClientFigure(clientId);
                         }
@@ -301,7 +312,7 @@ public class SimulationPage extends JFrame {
         openCloseBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                var deskId = Integer.parseInt(ticketboxid.getText());
+                var deskId = Integer.parseInt(ticketboxid.getText())-1;
                 var tickBox = railwayHallViewModel.getTicketBoxes().get(deskId);
                 if (tickBox.isOpen())
                     railwayHallViewModel.closeTicketBox(tickBox.getId());

@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class SimulationArea extends JPanel {
     private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
+    private Map<Integer, TicketBoxFigure> ticketboxFigureMap = new HashMap<>();
     private List<EntranceFigure> entrancesFigures = new ArrayList<>();
 
     public SimulationArea() {
@@ -31,10 +32,11 @@ public class SimulationArea extends JPanel {
         repaint();
     }
 
-    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
-        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, count);
+    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count, boolean isReserved) {
+        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, count, isReserved);
         add(figure);
         figure.setBounds(posX, posY, 90, 75);
+        ticketboxFigureMap.put(id, figure);
         repaint();
     }
 
@@ -53,32 +55,50 @@ public class SimulationArea extends JPanel {
         return true;
     }
 
+
     public void animateClientMovement(String id, int newX, int newY) {
         ClientFigure clientFigure = clientFigureMap.get(id);
         if (clientFigure == null) {
             return;
         }
-        Timer timer = new Timer(30, new ActionListener() {
-            private int currentX = clientFigure.posX;
-            private int currentY = clientFigure.posY;
-            private int deltaX = (newX - currentX) / 10;
-            private int deltaY = (newY - currentY) / 10;
+
+        final int animationTime = 300; // Час анімації у мілісекундах
+        final int frameRate = 30; // Частота оновлення кадрів
+        final int totalFrames = animationTime / frameRate;
+        final double deltaX = (double)(newX - clientFigure.posX) / totalFrames;
+        final double deltaY = (double)(newY - clientFigure.posY) / totalFrames;
+        final Timer timer = new Timer(frameRate, null);
+
+        ActionListener actionListener = new ActionListener() {
+            int currentFrame = 0;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Math.abs(currentX - newX) > Math.abs(deltaX) || Math.abs(currentY - newY) > Math.abs(deltaY)) {
-                    clientFigure.setPosition(currentX, currentY);
-                    currentX += deltaX;
-                    currentY += deltaY;
+                if (currentFrame < totalFrames) {
+                    clientFigure.setPosition(
+                            clientFigure.posX + (int)Math.round(deltaX * currentFrame),
+                            clientFigure.posY + (int)Math.round(deltaY * currentFrame)
+                    );
+                    currentFrame++;
+                    repaint();
                 } else {
-                    ((Timer) e.getSource()).stop();
+                    // Завершення анімації і коригування кінцевої позиції
                     clientFigure.setPosition(newX, newY);
+                    repaint();
+                    timer.stop();
                 }
-                repaint();
             }
-        });
+        };
+
+        timer.addActionListener(actionListener);
+
+        // Виконання першого кроку анімації відразу
+        actionListener.actionPerformed(null);
+
         timer.start();
     }
+
+
 
 
     @Override
@@ -104,6 +124,19 @@ public class SimulationArea extends JPanel {
         }
     }
 
+    public void removeTicketBoxFigure(Integer id) {
+        var ticketbox = ticketboxFigureMap.get(id);
+        if (ticketbox != null) {
+            remove(ticketbox);
+            clientFigureMap.remove(id);
+            repaint();
+        }
+    }
+
+    public Map<Integer, TicketBoxFigure> getTicketboxFigureMap() {
+        return ticketboxFigureMap;
+    }
+
     public class ClientFigure extends JComponent {
         private int posX;
         private int posY;
@@ -116,10 +149,6 @@ public class SimulationArea extends JPanel {
             setBounds(x, y, getWidth(), getHeight());
             repaint();
         }
-
-
-
-
 
         public ClientFigure(int posX, int posY, String id) {
             this.posX = posX;
@@ -160,13 +189,16 @@ public class SimulationArea extends JPanel {
         private final int count;
         private final int id;
         public boolean isOpen;
+        public boolean isReserved;
 
-        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count) {
+        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count, boolean isReserved) {
             this.posX = posX;
             this.posY = posY;
             this.count = count;
             this.id = id;
             this.isOpen = isOpen;
+            this.isReserved = isReserved;
+
             setOpaque(false);
             // The height now includes space for circles
             setPreferredSize(new Dimension(90, 75)); // Fixed width and height
@@ -176,25 +208,25 @@ public class SimulationArea extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
-
-            // Enable anti-aliasing for smoother shapes and text
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Draw the TicketBox rectangle
+            if (isReserved){
+                g2d.setColor(new Color(144, 138, 44));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+            } else
             if (isOpen) {
                 g2d.setColor(new Color(144, 238, 144)); // Light green color
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-            } else {
+            } else
+            {
                 g2d.setColor(Color.LIGHT_GRAY);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-                // Draw Disabled if box is closed
                 g2d.setColor(Color.BLACK);
                 drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
 
             }
-            // Draw the TicketBox ID inside the rectangle
             g2d.setColor(Color.BLACK);
             drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
             drawCircleWithCount(g2d, this.count, getWidth());
