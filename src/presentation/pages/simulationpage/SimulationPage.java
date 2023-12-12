@@ -238,6 +238,17 @@ public class SimulationPage extends JFrame {
                 if(ticketBox.getCurrentClient() != null)
                     detailsArea.append("Current client - " + ticketBox.getCurrentClient().getId() + "\n");
             }
+            case "Reserved Ticket Box" -> {
+                var ticketBox = railwayHallViewModel.getReservedTicketBox();
+                detailsArea.append("Ticket Box - " + ticketBox.getId() + "\n");
+                detailsArea.append("Position X - " + ticketBox.getPosition().getX() + "\n");
+                detailsArea.append("Position Y - " + ticketBox.getPosition().getY() + "\n");
+                detailsArea.append("Is open - " + ticketBox.isOpen() + "\n");
+                detailsArea.append("Clients count - " + ticketBox.getClientsCount() + "\n");
+                detailsArea.append("Clients in queue - " + Arrays.toString(ticketBox.getClients().stream().map(ClientViewModel::getId).toArray()) + "\n");
+                if(ticketBox.getCurrentClient() != null)
+                    detailsArea.append("Current client - " + ticketBox.getCurrentClient().getId() + "\n");
+            }
             case "Entrance" -> {
                 var entrance = railwayHallViewModel.getEntrances().get(selectedIndex);
                 detailsArea.append("Entrance - " + entrance.getId() + "\n");
@@ -269,13 +280,16 @@ public class SimulationPage extends JFrame {
                 simulation.start();
                 simulationStarted = true;
             } else {
-                simulation = new Timer(300, e1 -> {
+                simulation = new Timer(150, e1 -> {
                     railwayHallViewModel.tick();
 
                     var boxes = railwayHallViewModel.getTicketBoxes();
                     for(var box: boxes){
                         simulationArea.removeTicketBoxFigure(box.getId());
                     }
+                    var rbox = railwayHallViewModel.getReservedTicketBox();
+                    simulationArea.removeTicketBoxFigure(rbox.getId());
+
                     addTicketBoxes();
                     addReservedTicketBoxes();
                     addEntrances();
@@ -314,9 +328,6 @@ public class SimulationPage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 var deskId = Integer.parseInt(ticketboxid.getText()) -1;
                 var tickBox = railwayHallViewModel.getTicketBoxes().get(deskId);
-                System.out.println(tickBox.isOpen());
-                System.out.println(deskId);
-
                 if (tickBox.isOpen())
                     railwayHallViewModel.closeTicketBox(tickBox.getId());
                 else
@@ -337,6 +348,10 @@ public class SimulationPage extends JFrame {
         actionPanel.add(openCloseBut);
         actionPanel.add(cancelButt);
         return actionPanel;
+    }
+
+    private void updateTicketBox(int id, boolean isOpen) {
+        //simulationArea.updateTicketBox(id, isOpen);
     }
 
     private SimulationArea simulationArea;
