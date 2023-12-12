@@ -292,12 +292,7 @@ public class SimulationPage extends JFrame {
                     updateItemsPanel(currentPanel);
                     updateDetailsPanel(currentSelectedItem, Integer.min(clients.size(), currentSelectedIndex) - 1);
 
-                    for (var client : clients) {
-                        if (!simulationArea.isClientOnPage(client.getId() + "")) {
-                            simulationArea.addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId() + "");
-                        }
-                        simulationArea.animateClientMovement(client.getId() + "", client.getPosition().getX(), client.getPosition().getY()); // Нові координати X та Y
-                    }
+                    simulationArea.animateClientsMovement(clients);
                 });
 
                 simulation.start();

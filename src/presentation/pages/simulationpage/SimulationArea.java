@@ -1,6 +1,6 @@
 package presentation.pages.simulationpage;
 
-import presentation.viewmodels.stubs.ClientViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,50 +55,36 @@ public class SimulationArea extends JPanel {
         return true;
     }
 
-
-    public void animateClientMovement(String id, int newX, int newY) {
-        ClientFigure clientFigure = clientFigureMap.get(id);
-        if (clientFigure == null) {
-            return;
-        }
-
-        final int animationTime = 300; // Час анімації у мілісекундах
-        final int frameRate = 30; // Частота оновлення кадрів
-        final int totalFrames = animationTime / frameRate;
-        final double deltaX = (double)(newX - clientFigure.posX) / totalFrames;
-        final double deltaY = (double)(newY - clientFigure.posY) / totalFrames;
-        final Timer timer = new Timer(frameRate, null);
-
-        ActionListener actionListener = new ActionListener() {
-            int currentFrame = 0;
+    public void animateClientsMovement(List<ClientViewModel> clients) {
+        clients.forEach(client -> {
+            ClientFigure clientFigure = clientFigureMap.get(client.getId() + "");
+            if (clientFigure == null) {
+                addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId() + "");
+                clientFigure = clientFigureMap.get(client.getId() + "");
+            }
+            clientFigure.deltaX = (client.getPosition().getX() - clientFigure.posX) / 10;
+            clientFigure.deltaY = (client.getPosition().getY() - clientFigure.posY) / 10;
+        });
+        Timer timer = new Timer(30, new ActionListener() {
+            int steps = 0;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (currentFrame < totalFrames) {
-                    clientFigure.setPosition(
-                            clientFigure.posX + (int)Math.round(deltaX * currentFrame),
-                            clientFigure.posY + (int)Math.round(deltaY * currentFrame)
-                    );
-                    currentFrame++;
+                if (steps < 10) {
+                    for (ClientFigure clientFigure : clientFigureMap.values()) {
+                        int currentX = clientFigure.posX + clientFigure.deltaX;
+                        int currentY = clientFigure.posY + clientFigure.deltaY;
+                        clientFigure.setPosition(currentX, currentY);
+                    }
                     repaint();
+                    steps++;
                 } else {
-                    // Завершення анімації і коригування кінцевої позиції
-                    clientFigure.setPosition(newX, newY);
-                    repaint();
-                    timer.stop();
+                    ((Timer) e.getSource()).stop();
                 }
             }
-        };
-
-        timer.addActionListener(actionListener);
-
-        // Виконання першого кроку анімації відразу
-        actionListener.actionPerformed(null);
-
+        });
         timer.start();
     }
-
-
 
 
     @Override
@@ -141,6 +127,8 @@ public class SimulationArea extends JPanel {
         private int posX;
         private int posY;
         private final String id;
+        private int deltaX;
+        private int deltaY;
 
 
         public void setPosition(int x, int y) {

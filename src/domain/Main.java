@@ -34,8 +34,8 @@ public class Main {
         var ticketBoxConfigs = createTicketBoxConfigs();
         var reservedTicketBoxConfig = createReservedTicketBoxConfig();
         var entranceConfigs = createEntranceConfigs();
-        var clientCapacity = 5;
-        var restartClientCapacity = 4;
+        var clientCapacity = 50;
+        var restartClientCapacity = 40;
         return new RailwayHallConfig(ticketBoxConfigs, reservedTicketBoxConfig, entranceConfigs, clientCapacity, restartClientCapacity);
     }
 
