@@ -185,8 +185,13 @@ public class SimulationPage extends JFrame {
             clientItems.add("Client - " + client.getId() + " with priority " + client.getPriority());
         }
         var logItems = new ArrayList<String>();
+        var logs = railwayHallViewModel.getTotalRecords();
+        for(var log : logs) {
+            logItems.add("Log - " + log.getClientId() + " client on " + log.getTicketBoxId() + "ticket box");
+        }
+        railwayHallViewModel.getTotalRecords().stream().map(r -> Integer.toString(r.getClientId())).toList();
 
-        ArrayList<String> itemsToDisplay = switch (actionCommand) {
+        List<String> itemsToDisplay = switch (actionCommand) {
             case "General" -> generalItems;
             case "Ticket Boxes" -> ticketBoxItems;
             case "Entrances" -> entranceItems;
@@ -240,7 +245,7 @@ public class SimulationPage extends JFrame {
             }
             case "Reserved Ticket Box" -> {
                 var ticketBox = railwayHallViewModel.getReservedTicketBox();
-                detailsArea.append("Ticket Box - " + ticketBox.getId() + "\n");
+                detailsArea.append("Reserved Ticket Box - " + ticketBox.getId() + "\n");
                 detailsArea.append("Position X - " + ticketBox.getPosition().getX() + "\n");
                 detailsArea.append("Position Y - " + ticketBox.getPosition().getY() + "\n");
                 detailsArea.append("Is open - " + ticketBox.isOpen() + "\n");
@@ -265,6 +270,14 @@ public class SimulationPage extends JFrame {
                 detailsArea.append("Position Y - " + client.getPosition().getY() + "\n");
                 detailsArea.append("Priority - " + client.getPriority() + "\n");
                 detailsArea.append("Tickets count - " + client.getTicketsCount() + "\n");
+                detailsArea.append("Statuses - " + Arrays.toString(client.getStatuses().toArray()));
+            }
+            case "Log" -> {
+                var log = railwayHallViewModel.getTotalRecords().get(selectedIndex);
+                detailsArea.append("Client - " + log.getClientId() + "\n");
+                detailsArea.append("Ticket box - " + log.getTicketBoxId() + "\n");
+                detailsArea.append("Start ticks - " + log.getStartTicks() + "\n");
+                detailsArea.append("End ticks - " + log.getEndTicks() + "\n");
             }
         }
     }
@@ -273,6 +286,8 @@ public class SimulationPage extends JFrame {
         JPanel actionPanel = new JPanel();
         JButton startButton = new JButton("Start / Stop");
         startButton.addActionListener(e -> {
+            System.out.println(simulation);
+            System.out.println(simulationStarted);
             if (simulation != null && simulationStarted) {
                 simulation.stop();
                 simulationStarted = false;
