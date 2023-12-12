@@ -49,7 +49,7 @@ public class SimulationPage extends JFrame {
 
     private void addReservedTicketBoxes(){
         var box = railwayHallViewModel.getReservedTicketBox();
-        System.out.println(box.isOpen());
+        System.out.println("reserved tb" + box.isOpen());
         simulationArea.addTicketBoxFigure(box.getPosition().getX(), box.getPosition().getY(), box.getId(), box.isOpen(), box.getClientsCount(),true);
         setVisible(true);
     }
@@ -167,6 +167,10 @@ public class SimulationPage extends JFrame {
         for (var box : boxes){
             ticketBoxItems.add("Ticket Box - " + box.getId());
         }
+        var rbox = railwayHallViewModel.getReservedTicketBox();
+        ticketBoxItems.add("Reserved Ticket Box - " + rbox.getId());
+
+
 
         var entranceItems = new ArrayList<String>();
         var entrances = railwayHallViewModel.getEntrances();
@@ -273,6 +277,7 @@ public class SimulationPage extends JFrame {
                         simulationArea.removeTicketBoxFigure(box.getId());
                     }
                     addTicketBoxes();
+                    addReservedTicketBoxes();
                     addEntrances();
 
                     var clients = railwayHallViewModel.getClients();
@@ -307,13 +312,15 @@ public class SimulationPage extends JFrame {
         openCloseBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                var deskId = Integer.parseInt(ticketboxid.getText())-1;
+                var deskId = Integer.parseInt(ticketboxid.getText()) -1;
                 var tickBox = railwayHallViewModel.getTicketBoxes().get(deskId);
+                System.out.println(tickBox.isOpen());
+                System.out.println(deskId);
+
                 if (tickBox.isOpen())
                     railwayHallViewModel.closeTicketBox(tickBox.getId());
                 else
                     railwayHallViewModel.openTicketBox(tickBox.getId());
-                updateTicketBox(deskId, tickBox.isOpen());
             }
         });
 
@@ -330,10 +337,6 @@ public class SimulationPage extends JFrame {
         actionPanel.add(openCloseBut);
         actionPanel.add(cancelButt);
         return actionPanel;
-    }
-
-    private void updateTicketBox(int id, boolean isOpen) {
-        //simulationArea.updateTicketBox(id, isOpen);
     }
 
     private SimulationArea simulationArea;
