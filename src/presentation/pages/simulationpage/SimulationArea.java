@@ -93,7 +93,7 @@ public class SimulationArea extends JPanel {
             clientFigure.deltaX = (client.getPosition().getX() - clientFigure.posX) / 10;
             clientFigure.deltaY = (client.getPosition().getY() - clientFigure.posY) / 10;
         });
-        Timer timer = new Timer(15, new ActionListener() {
+        Timer timer = new Timer(50, new ActionListener() {
             int steps = 0;
 
             @Override

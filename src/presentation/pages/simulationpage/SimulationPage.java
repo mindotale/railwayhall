@@ -295,7 +295,7 @@ public class SimulationPage extends JFrame {
                 simulation.start();
                 simulationStarted = true;
             } else {
-                simulation = new Timer(150, e1 -> {
+                simulation = new Timer(500, e1 -> {
                     railwayHallViewModel.tick();
 
                     var boxes = railwayHallViewModel.getTicketBoxes();
