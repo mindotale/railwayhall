@@ -167,11 +167,9 @@ public class SimulationArea extends JPanel {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
             if (clientImage != null) {
                 g2d.drawImage(clientImage, 0, 0, getWidth(), getHeight(), this);
             }
-
             drawCenteredStringWithBackground(g2d, id, 0, 0, getWidth(), getHeight());
         }
 
