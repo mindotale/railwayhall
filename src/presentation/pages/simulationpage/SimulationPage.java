@@ -19,6 +19,8 @@ public class SimulationPage extends JFrame {
     private boolean simulationStarted;
     private Timer simulation;
     private String currentPanel = "General";
+    private String currentSelectedItem = "General";
+    private int currentSelectedIndex = 0;
     JLabel capacity;
 
     public SimulationPage(RailwayHallViewModel railwayHallViewModel) {
@@ -207,33 +209,35 @@ public class SimulationPage extends JFrame {
         return detailsScrollPane;
     }
     private void updateDetailsPanel(String selectedItem, int selectedIndex) {
+        currentSelectedItem = selectedItem;
+        currentSelectedIndex = selectedIndex + 1;
         detailsArea.selectAll();
         detailsArea.replaceSelection("");
 
         switch (selectedItem.split("-")[0].strip()) {
             case "Ticket Box" -> {
                 var ticketBox = railwayHallViewModel.getTicketBoxes().get(selectedIndex);
-                detailsArea.append("id - " + ticketBox.getId() + "\n");
+                detailsArea.append("Ticket Box - " + ticketBox.getId() + "\n");
                 detailsArea.append("Position X - " + ticketBox.getPosition().getX() + "\n");
                 detailsArea.append("Position Y - " + ticketBox.getPosition().getY() + "\n");
                 detailsArea.append("Is open - " + ticketBox.isOpen() + "\n");
                 detailsArea.append("Clients count - " + ticketBox.getClientsCount() + "\n");
                 detailsArea.append("Clients in queue - " + Arrays.toString(ticketBox.getClients().stream().map(ClientViewModel::getId).toArray()) + "\n");
-                //detailsArea.append("Current client - " + ticketBox.getCurrentClient().getId() + "\n"); // TODO: check exeption
+                if(ticketBox.getCurrentClient() != null)
+                    detailsArea.append("Current client - " + ticketBox.getCurrentClient().getId() + "\n");
             }
             case "Entrance" -> {
                 var entrance = railwayHallViewModel.getEntrances().get(selectedIndex);
-                detailsArea.append("id - " + entrance.getId() + "\n");
+                detailsArea.append("Entrance - " + entrance.getId() + "\n");
                 detailsArea.append("Position X - " + entrance.getPosition().getX() + "\n");
                 detailsArea.append("Position Y - " + entrance.getPosition().getY() + "\n");
                 detailsArea.append("Is open - " + entrance.isOpen() + "\n");
                 detailsArea.append("Clients count - " + entrance.getClientsCount() + "\n");
                 detailsArea.append("Clients in queue - " + Arrays.toString(entrance.getClients().stream().map(ClientViewModel::getId).toArray()) + "\n");
-                //detailsArea.append("Current client - " + entrance.getCurrentClient().getId() + "\n"); // TODO: check exeption
             }
             case "Client" -> {
                 var client = railwayHallViewModel.getClients().get(selectedIndex);
-                detailsArea.append("id - " + client.getId() + "\n");
+                detailsArea.append("Client - " + client.getId() + "\n");
                 detailsArea.append("Position X - " + client.getPosition().getX() + "\n");
                 detailsArea.append("Position Y - " + client.getPosition().getY() + "\n");
                 detailsArea.append("Priority - " + client.getPriority() + "\n");
@@ -256,10 +260,8 @@ public class SimulationPage extends JFrame {
                 simulation = new Timer(300, e1 -> {
                     railwayHallViewModel.tick();
 
-                            updateItemsPanel(currentPanel);
-
-                            addTicketBoxes();
-                            addEntrances();
+                    addTicketBoxes();
+                    addEntrances();
 
                     var clients = railwayHallViewModel.getClients();
                     for (String clientId : new ArrayList<>(simulationArea.getClientFigureMap().keySet())) {
@@ -276,6 +278,8 @@ public class SimulationPage extends JFrame {
                             simulationArea.removeClientFigure(clientId);
                         }
                     }
+                    updateItemsPanel(currentPanel);
+                    updateDetailsPanel(currentSelectedItem, Integer.min(clients.size(), currentSelectedIndex) - 1);
 
                     for (var client : clients) {
                         if (!simulationArea.isClientOnPage(client.getId() + "")) {
@@ -306,7 +310,6 @@ public class SimulationPage extends JFrame {
                 updateTicketBox(deskId, tickBox.isOpen());
             }
         });
-
         actionPanel.add(startButton);
         actionPanel.add(ticketboxid);
         actionPanel.add(openCloseBut);
