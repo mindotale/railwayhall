@@ -310,9 +310,19 @@ public class SimulationPage extends JFrame {
                 updateTicketBox(deskId, tickBox.isOpen());
             }
         });
+
+        JButton cancelButt = new JButton("Cancel");
+        cancelButt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
         actionPanel.add(startButton);
         actionPanel.add(ticketboxid);
         actionPanel.add(openCloseBut);
+        actionPanel.add(cancelButt);
         return actionPanel;
     }
 
