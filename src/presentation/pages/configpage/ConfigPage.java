@@ -2,10 +2,13 @@ package presentation.pages.configpage;
 
 
 import domain.Main.*;
+import domain.clients.ClientStatus;
+import domain.clients.ConstantClientGenerationStrategy;
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
 import domain.railwayhalls.RailwayHall;
 import domain.railwayhalls.RailwayHallConfig;
+import domain.ticketboxes.RandomTicketTimeProcessingStrategy;
 import domain.ticketboxes.TicketBoxConfig;
 import domain.common.IntegerIdGenerator;
 import presentation.pages.configpage.ticketboxes.EntranceConfigPanel;
@@ -105,6 +108,17 @@ public class ConfigPage extends JFrame {
         saveButton.setBounds(750, 220, 200, 50); // Adjusted position to the bottom-right corner
         panel.add(saveButton);
 
+
+        // Save Configuration button
+        JButton defaultButton = new JButton("Default Configuration");
+        defaultButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                defaultConfiguration();
+            }
+        });
+        defaultButton.setBounds(750, 280, 200, 50); // Adjusted position to the bottom-right corner
+        panel.add(defaultButton);
         // Add panel to the frame
         add(panel);
 
@@ -133,6 +147,50 @@ public class ConfigPage extends JFrame {
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void defaultConfiguration()
+    {
+        var strategy = new RandomTicketTimeProcessingStrategy(1,3);
+        var tickeboxConfigs = new ArrayList<TicketBoxConfig>();
+        tickeboxConfigs.add(new TicketBoxConfig(1,new Vector(50, 50), strategy));
+        tickeboxConfigs.add(new TicketBoxConfig(2,new Vector(30, 500), strategy));
+        tickeboxConfigs.add(new TicketBoxConfig(3,new Vector(700, 370), strategy));
+        var resultTicketBoxConfigs = tickeboxConfigs;
+
+        var entranceCConfigs = new ArrayList<EntranceConfig>();
+        var idGenerator = new IntegerIdGenerator();
+        var statuses = new ArrayList<ClientStatus>();
+        statuses.add(new ClientStatus("Status 1", 1));
+        statuses.add(new ClientStatus("Status 2", 2));
+        statuses.add(new ClientStatus("Status 3", 3));
+        var entranceStrategy1 = new ConstantClientGenerationStrategy(idGenerator, 2,
+                new Vector(380, 30), 10, 2, statuses);
+        var entranceStrategy2 = new ConstantClientGenerationStrategy(idGenerator, 2,
+                new Vector(350, 350), 10, 2, statuses);
+        var entranceStrategy3 = new ConstantClientGenerationStrategy(idGenerator, 2,
+                new Vector(330, 700), 10, 2, statuses);
+        entranceCConfigs.add(new EntranceConfig(1,new Vector(380, 30), entranceStrategy1));
+        entranceCConfigs.add(new EntranceConfig(2,new Vector(350, 350), entranceStrategy2));
+        entranceCConfigs.add(new EntranceConfig(3,new Vector(330, 700), entranceStrategy3));
+
+        var resultEntranceConfigs = entranceCConfigs;
+
+        var resultReservedTicketBoxConfig = new TicketBoxConfig(4, new Vector(750,600),
+                new RandomTicketTimeProcessingStrategy(1,3));
+
+        var resultClientCapacity = 50;
+        var resultrestartClientCapacity = 40;
+
+
+        if(ValidateElementsDistance(resultTicketBoxConfigs, resultEntranceConfigs, resultReservedTicketBoxConfig))
+        {
+            var railwayHallConfig = new RailwayHallConfig(resultTicketBoxConfigs,
+                    resultReservedTicketBoxConfig, resultEntranceConfigs, resultClientCapacity,
+                    resultrestartClientCapacity);
+            var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
+            SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
         }
     }
 
