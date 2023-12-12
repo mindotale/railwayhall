@@ -1,6 +1,6 @@
 package presentation.pages.simulationpage;
 
-import presentation.viewmodels.stubs.ClientViewModel;
+import presentation.viewmodels.abstractions.ClientViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class SimulationArea extends JPanel {
     private Map<String, ClientFigure> clientFigureMap = new HashMap<>();
-    private List<TicketBoxFigure> figures = new ArrayList<>();
+    private Map<Integer, TicketBoxFigure> ticketboxFigureMap = new HashMap<>();
     private List<EntranceFigure> entrancesFigures = new ArrayList<>();
 
     public SimulationArea() {
@@ -32,47 +32,55 @@ public class SimulationArea extends JPanel {
         repaint();
     }
 
-    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
-        // Now pass this list to the TicketBoxFigure constructor
-        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, clientIds);
-        figures.add(figure);
+    public void addTicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count, boolean isReserved) {
+        TicketBoxFigure figure = new TicketBoxFigure(posX, posY, id, isOpen, count, isReserved);
         add(figure);
-        // Adjust the bounds as needed to fit all the client circles
-
         figure.setBounds(posX, posY, 90, 75);
+        ticketboxFigureMap.put(id, figure);
         repaint();
     }
 
     public void addEntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientsIds) {
         EntranceFigure entrance = new EntranceFigure(posX, posY, id, isOpen, clientsIds);
-        entrancesFigures.add(entrance);
         add(entrance);
         entrance.setBounds(posX, posY, 90, 75);
         repaint();
     }
 
-    public void animateClientMovement(String id, int newX, int newY) {
+    public boolean isClientOnPage(String id) {
         ClientFigure clientFigure = clientFigureMap.get(id);
         if (clientFigure == null) {
-            return;
+            return false;
         }
-        Timer timer = new Timer(30, new ActionListener() {
-            private int currentX = clientFigure.posX;
-            private int currentY = clientFigure.posY;
-            private int deltaX = (newX - currentX) / 10; // 10 кроків анімації
-            private int deltaY = (newY - currentY) / 10;
+        return true;
+    }
+
+    public void animateClientsMovement(List<ClientViewModel> clients) {
+        clients.forEach(client -> {
+            ClientFigure clientFigure = clientFigureMap.get(client.getId() + "");
+            if (clientFigure == null) {
+                addClientFigure(client.getPosition().getX(), client.getPosition().getY(), client.getId() + "");
+                clientFigure = clientFigureMap.get(client.getId() + "");
+            }
+            clientFigure.deltaX = (client.getPosition().getX() - clientFigure.posX) / 10;
+            clientFigure.deltaY = (client.getPosition().getY() - clientFigure.posY) / 10;
+        });
+        Timer timer = new Timer(15, new ActionListener() {
+            int steps = 0;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Math.abs(currentX - newX) > Math.abs(deltaX) || Math.abs(currentY - newY) > Math.abs(deltaY)) {
-                    clientFigure.setPosition(currentX, currentY);
-                    currentX += deltaX;
-                    currentY += deltaY;
+                if (steps < 10) {
+                    for (ClientFigure clientFigure : clientFigureMap.values()) {
+                        int currentX = clientFigure.posX + clientFigure.deltaX;
+                        int currentY = clientFigure.posY + clientFigure.deltaY;
+                        clientFigure.setPosition(currentX, currentY);
+                    }
+                    repaint();
+                    steps++;
                 } else {
                     ((Timer) e.getSource()).stop();
-                    clientFigure.setPosition(newX, newY);
                 }
-                repaint();
             }
         });
         timer.start();
@@ -90,10 +98,37 @@ public class SimulationArea extends JPanel {
         }
     }
 
+    public Map<String, ClientFigure> getClientFigureMap() {
+        return clientFigureMap;
+    }
+    public void removeClientFigure(String id) {
+        ClientFigure clientFigure = clientFigureMap.get(id);
+        if (clientFigure != null) {
+            remove(clientFigure);
+            clientFigureMap.remove(id);
+            repaint();
+        }
+    }
+
+    public void removeTicketBoxFigure(Integer id) {
+        var ticketbox = ticketboxFigureMap.get(id);
+        if (ticketbox != null) {
+            remove(ticketbox);
+            clientFigureMap.remove(id);
+            repaint();
+        }
+    }
+
+    public Map<Integer, TicketBoxFigure> getTicketboxFigureMap() {
+        return ticketboxFigureMap;
+    }
+
     public class ClientFigure extends JComponent {
         private int posX;
         private int posY;
         private final String id;
+        private int deltaX;
+        private int deltaY;
 
 
         public void setPosition(int x, int y) {
@@ -141,16 +176,17 @@ public class SimulationArea extends JPanel {
         private final int posY;
         private final int count;
         private final int id;
-        private final boolean isOpen;
-        private final List<String> clientIds;
+        public boolean isOpen;
+        public boolean isReserved;
 
-        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
+        public TicketBoxFigure(int posX, int posY, int id, boolean isOpen, int count, boolean isReserved) {
             this.posX = posX;
             this.posY = posY;
-            this.count = clientIds.size();
+            this.count = count;
             this.id = id;
             this.isOpen = isOpen;
-            this.clientIds = clientIds;
+            this.isReserved = isReserved;
+
             setOpaque(false);
             // The height now includes space for circles
             setPreferredSize(new Dimension(90, 75)); // Fixed width and height
@@ -160,42 +196,28 @@ public class SimulationArea extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
-
-            // Enable anti-aliasing for smoother shapes and text
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Draw the TicketBox rectangle
+            if (isReserved){
+                g2d.setColor(new Color(144, 138, 44));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
+            } else
             if (isOpen) {
                 g2d.setColor(new Color(144, 238, 144)); // Light green color
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-            } else {
+            } else
+            {
                 g2d.setColor(Color.LIGHT_GRAY);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Fill the rectangle
 
-                // Draw Disabled if box is closed
                 g2d.setColor(Color.BLACK);
                 drawCenteredString(g2d, "Disabled", 0, -10, getWidth(), getHeight());
 
             }
-            // Draw the TicketBox ID inside the rectangle
             g2d.setColor(Color.BLACK);
             drawCenteredString(g2d, "TB " + id, 0, 10, getWidth(), getHeight()); // Center the ID string in the rectangle
-
-
-            // Constants for the circle
-            int circleDiameter = 20; // Diameter of the circle
-            int circleX = getWidth() - circleDiameter - 5; // Position the circle at the right edge
-            int circleY = 5; // A small margin from the top edge
-
-            // Draw the circle with the count
-            g2d.setColor(Color.BLUE);
-            g2d.fillOval(circleX, circleY, circleDiameter, circleDiameter);
-
-            // Draw the count inside the circle
-            g2d.setColor(Color.WHITE);
-            String countText = String.valueOf(count);
-            drawCenteredString(g2d, countText, circleX, circleY, circleDiameter, circleDiameter);
+            drawCircleWithCount(g2d, this.count, getWidth());
         }
     }
 
@@ -205,12 +227,14 @@ public class SimulationArea extends JPanel {
         private final int id;
         private final boolean isOpen;
         private final List<String> clientIds;
+        private final int count;
         public EntranceFigure(int posX, int posY, int id, boolean isOpen, List<String> clientIds) {
             this.posX = posX;
             this.posY = posY;
             this.id = id;
             this.isOpen = isOpen;
             this.clientIds = clientIds;
+            this.count = this.clientIds.size();
             setOpaque(false);
             // The height now includes space for circles
             //setPreferredSize(new Dimension(90, 75)); // Fixed width and height
@@ -234,7 +258,7 @@ public class SimulationArea extends JPanel {
             }
             g2d.setColor(Color.BLACK);
             drawCenteredString(g2d, "EN " + id, 0, 0, getWidth(), getHeight()); // Center the ID string in the rectangle
-
+            drawCircleWithCount(g2d, this.count, getWidth());
         }
     }
     private static void drawCenteredString(Graphics2D g, String text, int x, int y, int width, int height) {
@@ -244,5 +268,21 @@ public class SimulationArea extends JPanel {
         int textX = x + (width - textWidth) / 2;
         int textY = y + (height - fm.getDescent()) / 2 + textHeight / 2;
         g.drawString(text, textX, textY);
+    }
+
+    private static void drawCircleWithCount(Graphics2D g2d, int count, int width) {
+        // Constants for the circle
+        int circleDiameter = 20; // Diameter of the circle
+        int circleX = width - circleDiameter - 5; // Position the circle at the right edge
+        int circleY = 5; // A small margin from the top edge
+
+        // Draw the circle with the count
+        g2d.setColor(Color.BLUE);
+        g2d.fillOval(circleX, circleY, circleDiameter, circleDiameter);
+
+        // Draw the count inside the circle
+        g2d.setColor(Color.WHITE);
+        String countText = String.valueOf(count);
+        drawCenteredString(g2d, countText, circleX, circleY, circleDiameter, circleDiameter);
     }
 }

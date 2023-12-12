@@ -1,6 +1,7 @@
 package presentation.pages.configpage;
 
 
+import domain.Main.*;
 import domain.common.Vector;
 import domain.entrances.EntranceConfig;
 import domain.railwayhalls.RailwayHall;
@@ -130,7 +131,6 @@ public class ConfigPage extends JFrame {
                 var railwayHallViewModel = new RailwayHallViewModel(new RailwayHall(railwayHallConfig));
                 SwingUtilities.invokeLater(() -> new SimulationPage(railwayHallViewModel));
             }
-
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
         }
