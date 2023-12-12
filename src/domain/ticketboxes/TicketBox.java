@@ -122,6 +122,8 @@ public class TicketBox implements Ticker {
         }
 
         currentClient.processTicket();
+        var record = new ClientProcessingRecord(currentClient.getId(), id, startTicks, endTicks);
+        log.addRecord(record);
         setProcessingTicks();
     }
 
