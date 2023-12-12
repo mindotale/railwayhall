@@ -113,7 +113,7 @@ public class SimulationArea extends JPanel {
     }
 
     public Map<String, ClientFigure> getClientFigureMap() {
-        return clientFigureMap; // Повертаємо копію мапи для захисту інкапсуляції
+        return clientFigureMap;
     }
     public void removeClientFigure(String id) {
         ClientFigure clientFigure = clientFigureMap.get(id);
